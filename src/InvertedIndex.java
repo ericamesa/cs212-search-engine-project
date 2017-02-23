@@ -6,6 +6,7 @@ import java.util.TreeMap;
  */
 public class InvertedIndex {
 
+	// TODO final
 	/**
 	 * Stores a mapping of words to the positions the words were found.
 	 */
@@ -28,7 +29,7 @@ public class InvertedIndex {
 	 */
 	public void add(String word, String file, int position) {
 		
-		
+		// TODO Could reduce to less lines of code
 		if (index.get(word) == null){
 			TreeMap<String, TreeSet<Integer>> map = new TreeMap<>();
 			TreeSet<Integer> positions = new TreeSet<>();
@@ -81,9 +82,16 @@ public class InvertedIndex {
 		}
 	}
 	
+	// TODO Breaks encapsulation
 	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getMap() {
 		return index;
 	}
+	
+	// TODO Add this
+	/*
+	public void toJSON(Path path) {
+		JSONWriter.asDoubleNestedObject(index, path);
+	}*/
 	
 
 	/**
