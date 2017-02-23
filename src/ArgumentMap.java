@@ -41,6 +41,23 @@ public class ArgumentMap {
 	 */
 	public void parse(String[] args) {
 		String key = null, value = null, prev = null, curr; 
+
+		// TODO An alternative
+//		for (int i = 0; i < args.length; i++) {
+//			
+//			if (isFlag(args[i])) {
+//				if (i + 1 < args.length && isValue(args[i + 1])) {
+//					map.put(args[i], args[i + 1]);
+//					i++;
+//				}
+//				else {
+//					map.put(args[i], null);
+//				}
+//			}
+//			
+//		}
+		
+		
 		for (int i = 0; i < args.length; i++) {
 			curr = args[i];
 			if (prev == null){
@@ -77,6 +94,9 @@ public class ArgumentMap {
 	 * @return
 	 */
 	public static boolean isFlag(String arg) {
+		// TODO An alternate approach
+		// return arg != null && arg.trim().length() > 1 && arg.startsWith("-");
+		
 		if (arg != null && arg.length() > 1) {
 			if (arg.charAt(0) == '-' && arg.charAt(1) != ' ') return true;
 		}
@@ -154,6 +174,8 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public String getString(String flag, String defaultValue, String defaultNullValue) {
+		// TODO Avoid the one-line if/else style, always include braces
+		// TODO You can also configure Eclipse to always add the braces for you
 		if (map.containsKey(flag)){
 			if (map.get(flag) == null)
 				return defaultNullValue;

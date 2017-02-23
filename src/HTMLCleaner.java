@@ -1,5 +1,7 @@
 import java.util.regex.Pattern;
 
+// TODO Configure Eclipse to remove unused imports on save
+
 /**
  * Cleans simple, validating HTML 4/5 into plain-text words using regular
  * expressions.

@@ -10,9 +10,14 @@ import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+// TODO Address and remove old TODO comments
+
+// TODO Anything that is generally useful should be a separate class
+// TODO Only Driver should be project-specific
+
 public class Driver {
 	
-
+	// TODO Can't throw exceptions from main, can throw EVERYWHERE else
 	public static void main(String[] args) throws IOException {
 
 		ArgumentMap arguMap = new ArgumentMap(args);
@@ -33,11 +38,13 @@ public class Driver {
 				writer.close();
 			}
 			catch (IOException e){
-				
+				// TODO Never do this! 
 			}
 		}
 		else {
 			if (Files.isDirectory(path)){
+				// TODO InvertedIndexBuilder.throughDirectory();
+				// TODO rename the method to reflect that it is parsing through HTML files
 				throughDirectory(path, index);
 			}
 			else {
@@ -51,6 +58,8 @@ public class Driver {
 		}
 
 	}
+	
+	// TODO Create some sort of builder class
 	
 	public static void throughDirectory(Path path, InvertedIndex index) throws IOException{
 		try (DirectoryStream<Path> directory = Files.newDirectoryStream(path);){
@@ -84,7 +93,8 @@ public class Driver {
 		}
 	}
 	
-	
+	// TODO Consider adding back JSONWRiter and creating a method
+	// TODO asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path)
 	public static void outputFile(InvertedIndex index, String output) throws IOException{
 		Path path = Paths.get(output);
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
