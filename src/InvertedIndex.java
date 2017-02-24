@@ -1,16 +1,16 @@
-import java.util.TreeSet;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /**
  * Data structure to store strings and their positions.
  */
 public class InvertedIndex {
-
-	// TODO final
 	/**
 	 * Stores a mapping of words to the positions the words were found.
 	 */
-	private TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
 
 	/**
 	 * Initializes the index.
@@ -20,7 +20,8 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Adds the word and the file it was found in and the position it was in the file to the index.
+	 * Adds the word and the file it was found in and the position it was in the
+	 * file to the index.
 	 *
 	 * @param word
 	 *            word to clean and add to index
@@ -28,30 +29,15 @@ public class InvertedIndex {
 	 *            position word was found
 	 */
 	public void add(String word, String file, int position) {
-		
-		// TODO Could reduce to less lines of code
-		if (index.get(word) == null){
-			TreeMap<String, TreeSet<Integer>> map = new TreeMap<>();
-			TreeSet<Integer> positions = new TreeSet<>();
-			positions.add(position);
-			map.put(file, positions);
-			index.put(word, map);
+		if (index.get(word) == null) {
+			index.put(word, new TreeMap<>());
+		} 
+		if (index.get(word).get(file) == null) {
+			index.get(word).put(file, new TreeSet<>());
 		}
-		else {
-			if (index.get(word).get(file) == null){
-				TreeSet<Integer> positions = new TreeSet<>();
-				positions.add(position);
-				index.get(word).put(file, positions);
-			}
-			else {
-				if (!index.get(word).get(file).contains(position)){
-					index.get(word).get(file).add(position);
-				}
-			}
-		}	
-
+		index.get(word).get(file).add(position);
 	}
-	
+
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at position 1.
@@ -81,18 +67,10 @@ public class InvertedIndex {
 			i++;
 		}
 	}
-	
-	// TODO Breaks encapsulation
-	public TreeMap<String, TreeMap<String, TreeSet<Integer>>> getMap() {
-		return index;
-	}
-	
-	// TODO Add this
-	/*
-	public void toJSON(Path path) {
+
+	public void toJSON(Path path) throws IOException {
 		JSONWriter.asDoubleNestedObject(index, path);
-	}*/
-	
+	}
 
 	/**
 	 * Returns a string representation of this index.

@@ -1,8 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 
-// TODO Homework: Fill in or fix all of the methods with TODO comments.
-
 /**
  * Parses command-line arguments into flag/value pairs, and stores those pairs
  * in a map for easy access.
@@ -40,52 +38,17 @@ public class ArgumentMap {
 	 *            command line arguments
 	 */
 	public void parse(String[] args) {
-		String key = null, value = null, prev = null, curr; 
-
-		// TODO An alternative
-//		for (int i = 0; i < args.length; i++) {
-//			
-//			if (isFlag(args[i])) {
-//				if (i + 1 < args.length && isValue(args[i + 1])) {
-//					map.put(args[i], args[i + 1]);
-//					i++;
-//				}
-//				else {
-//					map.put(args[i], null);
-//				}
-//			}
-//			
-//		}
-		
-		
-		for (int i = 0; i < args.length; i++) {
-			curr = args[i];
-			if (prev == null){
-				if (isFlag(curr)) {
-					key = curr;
-				}
-			}
-			else {
-				if (isFlag(curr)) {
-					if (isFlag(prev)) {
-						map.put(key, value);
-						key = null;
-						value = null;
-					}
-					key = curr;
-				}
-				else {
-					if (isFlag(prev)) {
-						value = curr;
-						map.put(key, value);
-						key = null;
-						value = null;
-					}
-				}
-			}
-			prev = curr;
-		}
-		if (key != null) map.put(key, value);
+		 for (int i = 0; i < args.length; i++) {
+			 if (isFlag(args[i])) {
+				 if (i + 1 < args.length && isValue(args[i + 1])) {
+					 map.put(args[i], args[i + 1]);
+					 i++;
+				 }
+				 else {
+					 map.put(args[i], null);
+				 }
+			 }
+		 }
 	}
 
 	/**
@@ -94,13 +57,7 @@ public class ArgumentMap {
 	 * @return
 	 */
 	public static boolean isFlag(String arg) {
-		// TODO An alternate approach
-		// return arg != null && arg.trim().length() > 1 && arg.startsWith("-");
-		
-		if (arg != null && arg.length() > 1) {
-			if (arg.charAt(0) == '-' && arg.charAt(1) != ' ') return true;
-		}
-		return false;
+		return arg != null && arg.trim().length() > 1 && arg.startsWith("-");
 	}
 
 	/**
@@ -109,10 +66,7 @@ public class ArgumentMap {
 	 * @return
 	 */
 	public static boolean isValue(String arg) {
-		if (arg != null && arg.length() >= 1) {
-			if (arg.charAt(0) != '-' && (Character.isDigit(arg.charAt(0)) ||  Character.isLetter(arg.charAt(0)))) return true;
-		}
-		return false;
+		return arg != null && arg.charAt(0) != '-' && (Character.isDigit(arg.charAt(0)) || Character.isLetter(arg.charAt(0)));
 	}
 
 	/**
@@ -158,7 +112,7 @@ public class ArgumentMap {
 	 * @return value as a String or null if flag or value was not found
 	 */
 	public String getString(String flag) {
-		return map.get(flag); 
+		return map.get(flag);
 	}
 
 	/**
@@ -174,16 +128,15 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public String getString(String flag, String defaultValue, String defaultNullValue) {
-		// TODO Avoid the one-line if/else style, always include braces
-		// TODO You can also configure Eclipse to always add the braces for you
-		if (map.containsKey(flag)){
-			if (map.get(flag) == null)
+		if (map.containsKey(flag)) {
+			if (map.get(flag) == null) {
 				return defaultNullValue;
-			else
+			} else {
 				return map.get(flag);
+			}
+		} else {
+			return defaultValue;
 		}
-		else
-			return defaultValue; 
 	}
 
 	/**
@@ -199,19 +152,17 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public int getInteger(String flag, int defaultValue) {
-		Integer integer; 
-		if (map.containsKey(flag)){
+		Integer integer;
+		if (map.containsKey(flag)) {
 			try {
 				integer = Integer.parseInt(map.get(flag));
-			} 
-			catch (NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				return defaultValue;
 			}
 			return integer;
+		} else {
+			return defaultValue;
 		}
-			
-		else
-			return defaultValue; 
 	}
 
 	@Override

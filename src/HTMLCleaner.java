@@ -1,7 +1,3 @@
-import java.util.regex.Pattern;
-
-// TODO Configure Eclipse to remove unused imports on save
-
 /**
  * Cleans simple, validating HTML 4/5 into plain-text words using regular
  * expressions.
@@ -25,11 +21,11 @@ public class HTMLCleaner {
 	 * @return text without any HTML entities
 	 */
 	public static String stripEntities(String html) {
-		
+
 		String regex = "&[\\w, #]+;";
-		
+
 		html = html.replaceAll(regex, " ");
-		
+
 		return html;
 	}
 
@@ -42,11 +38,11 @@ public class HTMLCleaner {
 	 * @return text without any HTML comments
 	 */
 	public static String stripComments(String html) {
-		
+
 		String regex = "<!--(?s).*?-->";
-		
+
 		html = html.replaceAll(regex, " ");
-		
+
 		return html;
 	}
 
@@ -59,11 +55,11 @@ public class HTMLCleaner {
 	 * @return text without any HTML tags
 	 */
 	public static String stripTags(String html) {
-		
+
 		String regex = "<(?s).*?>";
-		
+
 		html = html.replaceAll(regex, " ");
-		
+
 		return html;
 	}
 
@@ -85,11 +81,11 @@ public class HTMLCleaner {
 	 * @return text without that HTML element
 	 */
 	public static String stripElement(String html, String name) {
-		
+
 		String regex = "(?si)<" + name + ".*?>.*?</" + name + "?\\s*?>";
-		
+
 		html = html.replaceAll(regex, " ");
-		
+
 		return html;
 	}
 
