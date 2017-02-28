@@ -56,9 +56,6 @@ public class Driver {
 			
 			}
 		}
-		
-		
-		
 
 		if (argumentMap.hasFlag("-index")) {
 			String output = argumentMap.getString("-index", "NoFlag", defaultPath);
