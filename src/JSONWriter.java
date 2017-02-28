@@ -33,8 +33,10 @@ public class JSONWriter {
 		return String.format("\"%s\"", text);
 	}
 
+	// TODO Add Javadoc
 	public static void asDoubleNestedObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> index, Path path)
 			throws IOException {
+		// TODO Consider a method that doesn't require counters (just a little more efficient)
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("{");
 			writer.flush();
@@ -84,4 +86,7 @@ public class JSONWriter {
 			writer.close();
 		}
 	}
+	
+	// TODO Can back in asArray from homework (generally useful)
+	// TODO Can also call that functionality from within your asDoubleNestedObject method
 }

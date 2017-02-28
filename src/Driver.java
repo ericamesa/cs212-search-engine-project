@@ -5,18 +5,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+// TODO Javadoc
+
 public class Driver {
 
 	public static void main(String[] args) {
 
-		ArgumentMap arguMap = new ArgumentMap(args);
+		ArgumentMap argumentMap = new ArgumentMap(args);
 
 		InvertedIndex index = new InvertedIndex();
 
 		String defaultPath = "index.json";
-		String input = arguMap.getString("-path", "NoFlag", "NoValue");
+		String input = argumentMap.getString("-path", "NoFlag", "NoValue");
 		Path path = Paths.get(input);
-		String output = arguMap.getString("-index", "NoFlag", defaultPath);
+		String output = argumentMap.getString("-index", "NoFlag", defaultPath);
 
 		if (input.equals("NoValue")) {
 			System.out.println("No Path Provided");
@@ -41,11 +43,30 @@ public class Driver {
 					index.toJSON(outputPath);
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				e.printStackTrace(); // TODO User-friendly exception output, no stack traces
 			}
 
 		}
 
+		/* TODO 
+		if (argumentMap.hasFlag("-path")) {
+			if (argumentMap.hasValue("-path")) {
+			
+				String path = argumentMap.getString("-path");
+			
+			}
+		}
+		
+		
+		
+
+		if (argumentMap.hasFlag("-index")) {
+			String output = argumentMap.getString("-index", "NoFlag", defaultPath);
+			Path outputPath = Paths.get(output);
+			index.toJSON(outputPath);
+		}
+		*/
+		
 	}
 
 }

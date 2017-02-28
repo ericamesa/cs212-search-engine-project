@@ -68,6 +68,7 @@ public class InvertedIndex {
 		}
 	}
 
+	// TOODO Javadoc
 	public void toJSON(Path path) throws IOException {
 		JSONWriter.asDoubleNestedObject(index, path);
 	}
@@ -79,4 +80,10 @@ public class InvertedIndex {
 	public String toString() {
 		return index.toString();
 	}
+	
+	// TODO containsWord(String word)
+	// TODO containsPath(String word, String path)
+	// TODO etc...
+	
+	
 }

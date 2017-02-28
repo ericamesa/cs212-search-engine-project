@@ -5,6 +5,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+// TODO Javadoc all classes and methods
+
 public class InvertedIndexBuilder {
 
 	public static void throughDirectory(Path path, InvertedIndex index) throws IOException {
@@ -23,6 +25,10 @@ public class InvertedIndexBuilder {
 	}
 
 	public static void throughHTMLFile(Path path, String filename, InvertedIndex index) throws IOException {
+		// TODO create a case-insensitive regex to test if i ends with htm or html
+		// TODO filename.toLowerCase().endsWith() for htm and html
+		// TODO Doesn't capture .hTML etc.
+		// TODO https://docs.oracle.com/javase/tutorial/essential/io/find.html
 		if (filename.endsWith(".html") || filename.endsWith(".htm") || filename.endsWith(".HTML")) {
 			String wholeFile = "";
 			try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
