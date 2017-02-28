@@ -4,7 +4,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Data structure to store strings and their positions.
+ * Data structure to store words, their path, and their positions.
  */
 public class InvertedIndex {
 	/**
@@ -68,7 +68,12 @@ public class InvertedIndex {
 		}
 	}
 
-	// TOODO Javadoc
+	/**
+	 * Writes index to specified path in JSON format.
+	 *
+	 * @param path
+	 *            path to write to
+	 */
 	public void toJSON(Path path) throws IOException {
 		JSONWriter.asDoubleNestedObject(index, path);
 	}
@@ -81,9 +86,71 @@ public class InvertedIndex {
 		return index.toString();
 	}
 	
-	// TODO containsWord(String word)
-	// TODO containsPath(String word, String path)
-	// TODO etc...
+	/**
+	 * Checks to see if index contains word given
+	 *
+	 * @param word
+	 *            word to find in index
+	 * @return true if index contains word, false otherwise
+	 */
+	public boolean containsWord(String word) {
+		for (String w : index.keySet()) {
+			if (w.equals(word)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks to see if index contains path given for the specified word
+	 *
+	 * @param word
+	 *            word to find in index
+	 * @param path
+	 *            path to find in index
+	 * @return true if index contains word, false otherwise
+	 */
+	public boolean containsPath(String word, String path) {
+		for (String w : index.keySet()) {
+			if (w.equals(word)){
+				for (String file : index.get(word).keySet()) {
+					if (file.equals(path)){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks to see if index contains position given for the specified word and path
+	 *
+	 * @param word
+	 *            word to find in index
+	 * @param path
+	 *            path to find in index
+	 * @param position
+	 *            position to find in index
+	 * @return true if index contains word, false otherwise
+	 */
+	public boolean containsPosition(String word, String path, Integer position) {
+		for (String w : index.keySet()) {
+			if (w.equals(word)){
+				for (String file : index.get(word).keySet()) {
+					if (file.equals(path)){
+						for (Integer p : index.get(word).get(path)) {
+							if (p.compareTo(position) == 0) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 	
 	
 }

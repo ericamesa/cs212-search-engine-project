@@ -5,64 +5,66 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-// TODO Javadoc
+/**
+* Driver class which takes in args and adds words from -path argument to an InvertedIndex and outputs to -index
+* argument
+*/
 
 public class Driver {
 
 	public static void main(String[] args) {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
-
 		InvertedIndex index = new InvertedIndex();
 
-		String defaultPath = "index.json";
-		String input = argumentMap.getString("-path", "NoFlag", "NoValue");
-		Path path = Paths.get(input);
-		String output = argumentMap.getString("-index", "NoFlag", defaultPath);
+		if (argumentMap.hasFlag("-path")) {
+			if (!argumentMap.hasValue("-path")) {
+				System.out.println("No Path Provided");
+				return;
+			}
+			else {
+				String input = argumentMap.getString("-path");
+				Path path = Paths.get(input);
+				try {
+					if (Files.isDirectory(path)) {
+						InvertedIndexBuilder.throughDirectory(path, index);
+					} else {
+						InvertedIndexBuilder.throughHTMLFile(path, input, index);
 
-		if (input.equals("NoValue")) {
-			System.out.println("No Path Provided");
-		} else if (input.equals("NoFlag")) {
-			try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(defaultPath), StandardCharsets.UTF_8)) {
+					}
+				} catch (IOException e) {
+					System.out.println("The path you provided could not be read through.");
+					return;
+				}
+			}
+			
+		}
+		else {
+			try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("index.json"), StandardCharsets.UTF_8)) {
 				writer.write("");
 				writer.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Could not write to file.");
 			}
-		} else {
-			try {
-				if (Files.isDirectory(path)) {
-					InvertedIndexBuilder.throughDirectory(path, index);
-				} else {
-					InvertedIndexBuilder.throughHTMLFile(path, input, index);
-
-				}
-
-				if (!output.equals("")) {
-					Path outputPath = Paths.get(output);
-					index.toJSON(outputPath);
-				}
-			} catch (IOException e) {
-				e.printStackTrace(); // TODO User-friendly exception output, no stack traces
-			}
-
-		}
-
-		/* TODO 
-		if (argumentMap.hasFlag("-path")) {
-			if (argumentMap.hasValue("-path")) {
-			
-				String path = argumentMap.getString("-path");
-			
-			}
+			return;
 		}
 
 		if (argumentMap.hasFlag("-index")) {
-			String output = argumentMap.getString("-index", "NoFlag", defaultPath);
+			String output;
+			if (!argumentMap.hasValue("-index")){
+				output = "index.json";
+			}
+			else {
+				output = argumentMap.getString("-index");
+			}
 			Path outputPath = Paths.get(output);
-			index.toJSON(outputPath);
+			try {
+				index.toJSON(outputPath);
+			} catch (IOException e) {
+				System.out.println("Could not write to file.");
+			}
+			
 		}
-		*/
 		
 	}
 

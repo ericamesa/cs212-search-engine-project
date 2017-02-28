@@ -127,10 +127,10 @@ public class ArgumentMap {
 	 * @return value of flag as a String, or the default value if the flag or
 	 *         value is missing
 	 */
-	public String getString(String flag, String defaultValue, String defaultNullValue) {
+	public String getString(String flag, String defaultValue) {
 		if (map.containsKey(flag)) {
 			if (map.get(flag) == null) {
-				return defaultNullValue;
+				return defaultValue;
 			} else {
 				return map.get(flag);
 			}

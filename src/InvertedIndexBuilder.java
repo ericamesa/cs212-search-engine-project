@@ -4,11 +4,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-// TODO Javadoc all classes and methods
-
+/**
+ * Builds Inverted Index by going through directories and/or files and adds each word.
+ */
 public class InvertedIndexBuilder {
 
+	/**
+	 * Streams through a directory
+	 *
+	 * @param path
+	 *            path to stream through
+	 * @param index
+	 *            InvertedIndex to add to
+	 */
 	public static void throughDirectory(Path path, InvertedIndex index) throws IOException {
 		try (DirectoryStream<Path> directory = Files.newDirectoryStream(path);) {
 			for (Path file : directory) {
@@ -24,12 +35,20 @@ public class InvertedIndexBuilder {
 		}
 	}
 
+	/**
+	 * Goes through specified HTML file and adds each word to index
+	 *
+	 * @param path
+	 *            path to stream through
+	 * @param filename
+	 *            name of file to add to index
+	 * @param index
+	 *            InvertedIndex to add to
+	 */
 	public static void throughHTMLFile(Path path, String filename, InvertedIndex index) throws IOException {
-		// TODO create a case-insensitive regex to test if i ends with htm or html
-		// TODO filename.toLowerCase().endsWith() for htm and html
-		// TODO Doesn't capture .hTML etc.
-		// TODO https://docs.oracle.com/javase/tutorial/essential/io/find.html
-		if (filename.endsWith(".html") || filename.endsWith(".htm") || filename.endsWith(".HTML")) {
+		Pattern p = Pattern.compile("(?i)\\.html?$");
+		Matcher m = p.matcher(filename);
+		if (m.find()) {
 			String wholeFile = "";
 			try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 				String line;
