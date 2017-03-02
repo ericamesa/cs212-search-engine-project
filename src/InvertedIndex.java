@@ -94,10 +94,8 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsWord(String word) {
-		for (String w : index.keySet()) {
-			if (w.equals(word)){
-				return true;
-			}
+		if (index.containsKey(word)) {
+			return true;
 		}
 		return false;
 	}
@@ -112,14 +110,8 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPath(String word, String path) {
-		for (String w : index.keySet()) {
-			if (w.equals(word)){
-				for (String file : index.get(word).keySet()) {
-					if (file.equals(path)){
-						return true;
-					}
-				}
-			}
+		if (containsWord(word) && index.get(word).containsKey(path)){
+			return true;
 		}
 		return false;
 	}
@@ -136,18 +128,8 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPosition(String word, String path, Integer position) {
-		for (String w : index.keySet()) {
-			if (w.equals(word)){
-				for (String file : index.get(word).keySet()) {
-					if (file.equals(path)){
-						for (Integer p : index.get(word).get(path)) {
-							if (p.compareTo(position) == 0) {
-								return true;
-							}
-						}
-					}
-				}
-			}
+		if (containsPath(word, path) && index.get(word).get(path).contains(position)){
+			return true;
 		}
 		return false;
 	}
