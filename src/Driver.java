@@ -12,6 +12,10 @@ import java.nio.file.Paths;
 
 public class Driver {
 
+	/**
+	 * TODO Fill this in!
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
@@ -39,6 +43,7 @@ public class Driver {
 			}
 			
 		}
+		// TODO Remove this else statement completely. It will be taken care of by the if (-index) part.
 		else {
 			try (BufferedWriter writer = Files.newBufferedWriter(Paths.get("index.json"), StandardCharsets.UTF_8)) {
 				writer.write("");
@@ -50,6 +55,7 @@ public class Driver {
 		}
 
 		if (argumentMap.hasFlag("-index")) {
+			// TODO Use String output = argumentMap.getString("-index", "index.json") instead of the if/else below.
 			String output;
 			if (!argumentMap.hasValue("-index")){
 				output = "index.json";
@@ -57,6 +63,7 @@ public class Driver {
 			else {
 				output = argumentMap.getString("-index");
 			}
+			
 			Path outputPath = Paths.get(output);
 			try {
 				index.toJSON(outputPath);

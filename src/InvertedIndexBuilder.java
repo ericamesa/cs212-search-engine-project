@@ -54,6 +54,7 @@ public class InvertedIndexBuilder {
 				String line;
 				String[] words;
 				while ((line = br.readLine()) != null) {
+					// TODO Use a StringBuffer and NOT String concatenation! VERY IMPORTANT.
 					wholeFile += line + " ";
 				}
 				wholeFile = HTMLCleaner.stripHTML(wholeFile);

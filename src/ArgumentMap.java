@@ -88,6 +88,7 @@ public class ArgumentMap {
 	 */
 	public boolean hasFlag(String flag) {
 		return (map.containsKey(flag)) ? true : false;
+		// TODO Just do "return (map.containsKey(flag));"... the ternary part isn't required.
 	}
 
 	/**
@@ -101,6 +102,8 @@ public class ArgumentMap {
 	 */
 	public boolean hasValue(String flag) {
 		return (map.containsKey(flag) && map.get(flag) != null) ? true : false;
+		
+		// TODO return (map.containsKey(flag) && map.get(flag) != null);
 	}
 
 	/**
@@ -128,6 +131,14 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public String getString(String flag, String defaultValue) {
+		// TODO If the map doesn't contain the flag, map.get() will return null. So all you need is:
+		/*
+			if (map.get(flag) == null) {
+				return defaultValue;
+			} else {
+				return map.get(flag);
+			}
+		 */
 		if (map.containsKey(flag)) {
 			if (map.get(flag) == null) {
 				return defaultValue;
@@ -152,6 +163,14 @@ public class ArgumentMap {
 	 *         value is missing
 	 */
 	public int getInteger(String flag, int defaultValue) {
+		/* TODO I think you can simplify to this:
+		try {
+			return Integer.parseInt(map.get(flag));
+		} catch (NumberFormatException|NullPointerException e) {
+			return defaultValue;
+		}
+		*/
+		
 		Integer integer;
 		if (map.containsKey(flag)) {
 			try {
