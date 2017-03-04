@@ -36,6 +36,8 @@ public class JSONWriter {
 		return String.format("\"%s\"", text);
 	}
 
+	// TODO Try to generalize more. Create an asArray helper that you can call here every time you need to output a treeset.
+	
 	/**
 	 * Writes a DoubleNestedObject to file in JSON format
 	 *

@@ -94,6 +94,7 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsWord(String word) {
+		// TODO return index.containsKey(word);
 		if (index.containsKey(word)) {
 			return true;
 		}
@@ -110,6 +111,7 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPath(String word, String path) {
+		// TODO return (containsWord(word) && index.get(word).containsKey(path));
 		if (containsWord(word) && index.get(word).containsKey(path)){
 			return true;
 		}
@@ -128,6 +130,7 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPosition(String word, String path, Integer position) {
+		// TODO Same... return the condition directly
 		if (containsPath(word, path) && index.get(word).get(path).contains(position)){
 			return true;
 		}
