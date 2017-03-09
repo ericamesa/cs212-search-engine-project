@@ -49,16 +49,16 @@ public class InvertedIndexBuilder {
 		Pattern p = Pattern.compile("(?i)\\.html?$");
 		Matcher m = p.matcher(filename);
 		if (m.find()) {
-			String wholeFile = "";
+			StringBuilder wholeFile = new StringBuilder();
 			try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 				String line;
 				String[] words;
 				while ((line = br.readLine()) != null) {
-					// TODO Use a StringBuffer and NOT String concatenation! VERY IMPORTANT.
-					wholeFile += line + " ";
+					wholeFile.append(line + " ");
 				}
-				wholeFile = HTMLCleaner.stripHTML(wholeFile);
-				words = WordParser.parseWords(wholeFile);
+				String file = wholeFile.toString();
+				file = HTMLCleaner.stripHTML(file);
+				words = WordParser.parseWords(file);
 				index.addAll(words, filename);
 			}
 		}

@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -36,7 +37,31 @@ public class JSONWriter {
 		return String.format("\"%s\"", text);
 	}
 
-	// TODO Try to generalize more. Create an asArray helper that you can call here every time you need to output a treeset.
+	/**
+	 * Writes the set of elements as a JSON array at the specified indent level.
+	 *
+	 * @param writer
+	 *            writer to use for output
+	 * @param elements
+	 *            elements to write as JSON array
+	 * @param level
+	 *            number of times to indent the array itself
+	 * @throws IOException
+	 */
+	private static void asArray(BufferedWriter writer, TreeSet<Integer> elements, int level) throws IOException {
+		writer.write("[");
+		writer.newLine();
+		for (Integer element : elements) {
+			writer.write(indent(level) + element.toString());
+			
+			if (elements.last() != element) {
+				writer.write(",");
+			}
+			writer.flush();
+			writer.newLine();
+		}
+		writer.write(indent(level - 1) + "]");
+	}
 	
 	/**
 	 * Writes a DoubleNestedObject to file in JSON format
@@ -58,20 +83,8 @@ public class JSONWriter {
 				writer.newLine();
 				TreeMap<String, TreeSet<Integer>> files = index.get(word);
 				for (String file : files.keySet()) {
-					writer.write(indent(2) + quote(file) + ": [");
-					writer.flush();
-					writer.newLine();
-					TreeSet<Integer> positions = files.get(file);
-					for (Integer position : positions) {
-						writer.write(indent(3) + position.toString());
-
-						if (positions.last() != position) {
-							writer.write(",");
-						}
-						writer.flush();
-						writer.newLine();
-					}
-					writer.write(indent(2) + "]");
+					writer.write(indent(2) + quote(file) + ": ");
+					asArray(writer, files.get(file), 3);
 					if (!files.lastKey().equals(file)) {
 						writer.write(",");
 					}
@@ -120,4 +133,61 @@ public class JSONWriter {
 			writer.close();
 		}
 	}
+	
+	public static void asNestedObject(TreeMap<String, ArrayList<SearchResult>> index, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+			writer.write("[");
+			writer.flush();
+			writer.newLine();
+			for (String query : index.keySet()) {
+				writer.write(indent(1) + "{");
+				writer.flush();
+				writer.newLine();
+				writer.write(indent(2) + quote("queries") + ": " + quote(query) + ",");
+				writer.newLine();
+				writer.write(indent(2) + quote("results") + ": [");
+				writer.newLine();
+				int i = index.get(query).size();
+				for (SearchResult result : index.get(query)) {
+					writer.write(indent(3) + "{");
+					writer.flush();
+					writer.newLine();
+					
+					writer.write(indent(4) + quote("where") + ": "+ quote(result.path) + ",");
+					writer.newLine();
+					
+					writer.write(indent(4) + quote("count") + ": " + result.frequency() + ",");
+					writer.newLine();
+					
+					writer.write(indent(4) + quote("index") + ": " + result.initialPosition());
+					writer.newLine();
+					
+					writer.write(indent(3) + "}");
+					if (i > 1) {
+						writer.write(",");
+					}
+					writer.flush();
+					writer.newLine();
+					i--;
+				}
+				
+				writer.write(indent(2) + "]");
+				writer.newLine();
+				writer.write(indent(1) + "}");
+				if (!query.equals(index.lastKey())) {
+					writer.write(",");
+				}
+				writer.flush();
+				writer.newLine();
+			}
+			writer.write("]");
+			writer.flush();
+			writer.newLine();
+			writer.close();
+		}
+	}
 }
+
+
+
+

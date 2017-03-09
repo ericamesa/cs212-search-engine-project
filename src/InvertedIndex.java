@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -94,11 +96,17 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsWord(String word) {
-		// TODO return index.containsKey(word);
-		if (index.containsKey(word)) {
-			return true;
+		return index.containsKey(word);
+	}
+	
+	public ArrayList<String> containsPartialWord(String prefix) {
+		ArrayList<String> list = new ArrayList<>();
+		for (String word : index.keySet()) {
+			if (word.startsWith(prefix)) {
+				list.add(word);
+			}
 		}
-		return false;
+		return list;
 	}
 	
 	/**
@@ -111,11 +119,7 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPath(String word, String path) {
-		// TODO return (containsWord(word) && index.get(word).containsKey(path));
-		if (containsWord(word) && index.get(word).containsKey(path)){
-			return true;
-		}
-		return false;
+		return (containsWord(word) && index.get(word).containsKey(path));
 	}
 	
 	/**
@@ -130,12 +134,69 @@ public class InvertedIndex {
 	 * @return true if index contains word, false otherwise
 	 */
 	public boolean containsPosition(String word, String path, Integer position) {
-		// TODO Same... return the condition directly
-		if (containsPath(word, path) && index.get(word).get(path).contains(position)){
-			return true;
+		return containsPath(word, path) && index.get(word).get(path).contains(position);
+	}
+
+	
+	public ArrayList<SearchResult> exactSearch(String[] searchWords) {
+		ArrayList<SearchResult> foundWords = new ArrayList<>();
+		for (String word : searchWords) {
+			if (containsWord(word)) {
+				for (String path : index.get(word).keySet()){
+					boolean containsAlready = false;
+					int frequency = index.get(word).get(path).size();
+					int initialPosition = index.get(word).get(path).first();
+					SearchResult searchResult;
+					for (SearchResult result : foundWords) {
+						if (result.hasPath(path)) {
+							containsAlready = true;
+							result.addToFrequency(frequency);
+							result.updateInitialPosition(initialPosition);
+						}
+					}
+					if (!containsAlready) {
+						searchResult = new SearchResult(frequency, initialPosition, path);
+						foundWords.add(searchResult);
+					}
+				}
+				
+			}
 		}
-		return false;
+		Collections.sort(foundWords);
+		return foundWords;
 	}
 	
+	public ArrayList<SearchResult> partialSearch(String[] searchWords) {
+		ArrayList<SearchResult> foundWords = new ArrayList<>();
+		for (String word : searchWords) {
+			ArrayList<String> fullWords = containsPartialWord(word);
+			for (String fullWord : fullWords) {
+				for (String path : index.get(fullWord).keySet()){
+					boolean containsAlready = false;
+					int frequency = index.get(fullWord).get(path).size();
+					int initialPosition = index.get(fullWord).get(path).first();
+					SearchResult searchResult;
+					for (SearchResult result : foundWords) {
+						if (result.hasPath(path)) {
+							containsAlready = true;
+							result.addToFrequency(frequency);
+							result.updateInitialPosition(initialPosition);
+						}
+					}
+					if (!containsAlready) {
+						searchResult = new SearchResult(frequency, initialPosition, path);
+						foundWords.add(searchResult);
+					}
+				}
+			}
+		}
+		Collections.sort(foundWords);
+		return foundWords;
+	}
 	
 }
+
+
+
+
+
