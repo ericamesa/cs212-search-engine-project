@@ -134,6 +134,14 @@ public class JSONWriter {
 		}
 	}
 	
+	/**
+	 * Writes a NestedObject to file in JSON format
+	 *
+	 * @param index
+	 *            nested object to write to file
+	 * @param path
+	 *            path to write to
+	 */
 	public static void asNestedObject(TreeMap<String, ArrayList<SearchResult>> index, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("[");

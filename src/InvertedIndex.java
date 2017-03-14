@@ -99,6 +99,13 @@ public class InvertedIndex {
 		return index.containsKey(word);
 	}
 	
+	/**
+	 * Searches for partial matches of specified word given and a list of words 
+	 *
+	 * @param prefix
+	 *            word to find partial searches for
+	 * @return ArrayList of words
+	 */
 	public ArrayList<String> containsPartialWord(String prefix) {
 		ArrayList<String> list = new ArrayList<>();
 		for (String word : index.keySet()) {
@@ -137,7 +144,13 @@ public class InvertedIndex {
 		return containsPath(word, path) && index.get(word).get(path).contains(position);
 	}
 
-	
+	/**
+	 * Searches for exact matches of specified words given and returns a list of SearchResults 
+	 *
+	 * @param searchWords
+	 *            words to find exact searches for
+	 * @return ArrayList of SearchResults
+	 */
 	public ArrayList<SearchResult> exactSearch(String[] searchWords) {
 		ArrayList<SearchResult> foundWords = new ArrayList<>();
 		for (String word : searchWords) {
@@ -152,6 +165,7 @@ public class InvertedIndex {
 							containsAlready = true;
 							result.addToFrequency(frequency);
 							result.updateInitialPosition(initialPosition);
+							continue;
 						}
 					}
 					if (!containsAlready) {
@@ -166,6 +180,14 @@ public class InvertedIndex {
 		return foundWords;
 	}
 	
+
+	/**
+	 * Searches for partial matches of specified words given and returns a list of SearchResults 
+	 *
+	 * @param searchWords
+	 *            words to find partial searches for
+	 * @return ArrayList of SearchResults
+	 */
 	public ArrayList<SearchResult> partialSearch(String[] searchWords) {
 		ArrayList<SearchResult> foundWords = new ArrayList<>();
 		for (String word : searchWords) {
