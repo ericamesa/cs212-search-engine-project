@@ -43,6 +43,11 @@ public class SearchIndex {
 			while ((line = br.readLine()) != null) {
 				words = WordParser.parseWords(line);
 				Arrays.sort(words);
+				
+				// TODO Can reduce loops and storage using this:
+				// ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words); 
+				//index.put(String.join(" ", words), results);
+				
 				set.add(words);
 			}
 		}
