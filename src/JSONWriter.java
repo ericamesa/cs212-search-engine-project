@@ -51,6 +51,9 @@ public class JSONWriter {
 	private static void asArray(BufferedWriter writer, TreeSet<Integer> elements, int level) throws IOException {
 		writer.write("[");
 		writer.newLine();
+		
+		// TODO Try to find a way to not need an if inside of the loop
+		
 		for (Integer element : elements) {
 			writer.write(indent(level) + element.toString());
 			
@@ -119,8 +122,11 @@ public class JSONWriter {
 			writer.write("[");
 			writer.newLine();
 			int i = 1;
+			
+			// TODO Call your other asArray method
 			for (Integer element : elements) {
 				writer.write(indent(1) + element.toString());
+				
 				
 				if (i < elements.size()){
 					writer.write(",");

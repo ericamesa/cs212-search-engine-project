@@ -88,4 +88,6 @@ public class SearchResult implements Comparable<SearchResult> {
 		}
 		return Integer.compare(other.frequency, frequency);
 	}
+	
+	// TODO Maybe add a toString() method.
 }

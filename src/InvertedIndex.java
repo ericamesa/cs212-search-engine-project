@@ -152,13 +152,26 @@ public class InvertedIndex {
 	 * @return ArrayList of SearchResults
 	 */
 	public ArrayList<SearchResult> exactSearch(String[] searchWords) {
+		// TODO rename this?
 		ArrayList<SearchResult> foundWords = new ArrayList<>();
+		
+		// TODO HashMap<String, SearchResult> resultMap;
+		
 		for (String word : searchWords) {
 			if (containsWord(word)) {
 				for (String path : index.get(word).keySet()){
 					boolean containsAlready = false;
 					int frequency = index.get(word).get(path).size();
 					int initialPosition = index.get(word).get(path).first();
+					
+					// TODO Linear search always means there is a better way
+					
+					/*
+					 * Hey, resultMap, is this path a key already?
+					 * If yes, get the result associated with that key, and update
+					 * Else... add the path, result pair to the map AND the result to the list
+					 */
+					
 					SearchResult searchResult;
 					for (SearchResult result : foundWords) {
 						if (result.hasPath(path)) {
@@ -176,10 +189,14 @@ public class InvertedIndex {
 				
 			}
 		}
+		
+		// foundWords.addAll(resultMap.values());
+		
 		Collections.sort(foundWords);
 		return foundWords;
 	}
 	
+	// TODO Try to create a private helper method with the code common to both search  methods
 
 	/**
 	 * Searches for partial matches of specified words given and returns a list of SearchResults 
@@ -192,6 +209,15 @@ public class InvertedIndex {
 		ArrayList<SearchResult> foundWords = new ArrayList<>();
 		for (String word : searchWords) {
 			ArrayList<String> fullWords = containsPartialWord(word);
+			
+			// TODO Adopt this: https://github.com/usf-cs212-2017/lectures/blob/master/Data%20Structures/src/FindDemo.java#L144
+			// for maps instead of sets
+			/*(for (String key : index.keySet()) {
+				if (key.startsWith(query)) {
+					
+				}
+			}*/
+			
 			for (String fullWord : fullWords) {
 				for (String path : index.get(fullWord).keySet()){
 					boolean containsAlready = false;
