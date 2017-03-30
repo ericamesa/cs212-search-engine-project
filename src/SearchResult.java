@@ -89,5 +89,8 @@ public class SearchResult implements Comparable<SearchResult> {
 		return Integer.compare(other.frequency, frequency);
 	}
 	
-	// TODO Maybe add a toString() method.
+	@Override
+	public String toString() {
+		return "Path: " + path + ", Frequency: " + frequency + ", Initial position: " + initialPosition; 
+	}
 }

@@ -44,47 +44,11 @@ public class SearchIndex {
 				words = WordParser.parseWords(line);
 				Arrays.sort(words);
 				
-				// TODO Can reduce loops and storage using this:
-				// ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words); 
-				//index.put(String.join(" ", words), results);
+				if (words.length > 0) {
+					ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words); 
+					index.put(String.join(" ", words), results);
+				}
 				
-				set.add(words);
-			}
-		}
-		
-		ArrayList<SearchResult> results;
-		if (exact){
-			for (String[] elements : set) {
-				StringBuilder query = new StringBuilder();
-				int i = elements.length;
-				for (String element : elements) {
-					query.append(element);
-					if (i > 1){
-						query.append(" ");
-					}
-					i--;
-				}
-				if (elements.length > 0) {
-					results = invertedIndex.exactSearch(elements);
-					index.put(query.toString(), results);
-				}
-			}
-		}
-		else {
-			for (String[] elements : set) {
-				StringBuilder query = new StringBuilder();
-				int i = elements.length;
-				for (String element : elements) {
-					query.append(element);
-					if (i > 1){
-						query.append(" ");
-					}
-					i--;
-				}
-				if (elements.length > 0) {
-					results = invertedIndex.partialSearch(elements);
-					index.put(query.toString(), results);
-				}
 			}
 		}
 		

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -52,15 +53,16 @@ public class JSONWriter {
 		writer.write("[");
 		writer.newLine();
 		
-		// TODO Try to find a way to not need an if inside of the loop
-		
-		for (Integer element : elements) {
-			writer.write(indent(level) + element.toString());
-			
-			if (elements.last() != element) {
-				writer.write(",");
-			}
-			writer.flush();
+		Iterator<Integer> iterator = elements.iterator();
+		if (iterator.hasNext()){
+			writer.write(indent(level) + iterator.next());
+		}
+		while (iterator.hasNext()){
+			writer.write(",");
+			writer.newLine();
+			writer.write(indent(level) + iterator.next());
+		}
+		if (!elements.isEmpty()) {
 			writer.newLine();
 		}
 		writer.write(indent(level - 1) + "]");
@@ -123,21 +125,9 @@ public class JSONWriter {
 			writer.newLine();
 			int i = 1;
 			
-			// TODO Call your other asArray method
-			for (Integer element : elements) {
-				writer.write(indent(1) + element.toString());
-				
-				
-				if (i < elements.size()){
-					writer.write(",");
-				}
-				i++;
-				writer.flush();
-				writer.newLine();
-			}
-			writer.write("]");
-			writer.close();
+			asArray(writer, elements, 1);
 		}
+			
 	}
 	
 	/**

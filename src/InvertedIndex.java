@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -100,23 +101,6 @@ public class InvertedIndex {
 	}
 	
 	/**
-	 * Searches for partial matches of specified word given and a list of words 
-	 *
-	 * @param prefix
-	 *            word to find partial searches for
-	 * @return ArrayList of words
-	 */
-	public ArrayList<String> containsPartialWord(String prefix) {
-		ArrayList<String> list = new ArrayList<>();
-		for (String word : index.keySet()) {
-			if (word.startsWith(prefix)) {
-				list.add(word);
-			}
-		}
-		return list;
-	}
-	
-	/**
 	 * Checks to see if index contains path given for the specified word
 	 *
 	 * @param word
@@ -143,7 +127,33 @@ public class InvertedIndex {
 	public boolean containsPosition(String word, String path, Integer position) {
 		return containsPath(word, path) && index.get(word).get(path).contains(position);
 	}
-
+	
+	/**
+	 * Helper method for exact and partial search, which goes through each path of word in index and adds the 
+	 * path, frequency, and initial position of word and if path is already in map, adds to frequency and updates
+	 * initial position if necessary.
+	 *
+	 * @param word
+	 *            word to search for
+	 * @param resultMap
+	 * 			  map to add to or update
+	 */
+	public void wordSearch(String word, HashMap<String, SearchResult> resultMap) {
+		for (String path : index.get(word).keySet()){
+			int frequency = index.get(word).get(path).size();
+			int initialPosition = index.get(word).get(path).first();
+			
+			if (!resultMap.containsKey(path)) {
+				resultMap.put(path, new SearchResult(frequency, initialPosition, path));
+			}
+			else {
+				SearchResult searchResult = resultMap.get(path);
+				searchResult.addToFrequency(frequency);
+				searchResult.updateInitialPosition(initialPosition);
+			}
+		}
+	}
+	
 	/**
 	 * Searches for exact matches of specified words given and returns a list of SearchResults 
 	 *
@@ -152,52 +162,38 @@ public class InvertedIndex {
 	 * @return ArrayList of SearchResults
 	 */
 	public ArrayList<SearchResult> exactSearch(String[] searchWords) {
-		// TODO rename this?
-		ArrayList<SearchResult> foundWords = new ArrayList<>();
-		
-		// TODO HashMap<String, SearchResult> resultMap;
+		ArrayList<SearchResult> words = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		
 		for (String word : searchWords) {
 			if (containsWord(word)) {
-				for (String path : index.get(word).keySet()){
-					boolean containsAlready = false;
-					int frequency = index.get(word).get(path).size();
-					int initialPosition = index.get(word).get(path).first();
-					
-					// TODO Linear search always means there is a better way
-					
-					/*
-					 * Hey, resultMap, is this path a key already?
-					 * If yes, get the result associated with that key, and update
-					 * Else... add the path, result pair to the map AND the result to the list
-					 */
-					
-					SearchResult searchResult;
-					for (SearchResult result : foundWords) {
-						if (result.hasPath(path)) {
-							containsAlready = true;
-							result.addToFrequency(frequency);
-							result.updateInitialPosition(initialPosition);
-							continue;
-						}
-					}
-					if (!containsAlready) {
-						searchResult = new SearchResult(frequency, initialPosition, path);
-						foundWords.add(searchResult);
-					}
-				}
-				
+				wordSearch(word, resultMap);
 			}
 		}
 		
-		// foundWords.addAll(resultMap.values());
+		words.addAll(resultMap.values());
 		
-		Collections.sort(foundWords);
-		return foundWords;
+		Collections.sort(words);
+		return words;
 	}
 	
-	// TODO Try to create a private helper method with the code common to both search  methods
-
+	/**
+	 * Searches for partial matches of specified word given and a list of words 
+	 *
+	 * @param prefix
+	 *            word to find partial searches for
+	 * @return ArrayList of words
+	 */
+	public ArrayList<String> containsPartialWord(String prefix) {
+		ArrayList<String> list = new ArrayList<>();
+		for (String word : index.keySet()) {
+			if (word.startsWith(prefix)) {
+				list.add(word);
+			}
+		}
+		return list;
+	}
+	
 	/**
 	 * Searches for partial matches of specified words given and returns a list of SearchResults 
 	 *
@@ -206,45 +202,18 @@ public class InvertedIndex {
 	 * @return ArrayList of SearchResults
 	 */
 	public ArrayList<SearchResult> partialSearch(String[] searchWords) {
-		ArrayList<SearchResult> foundWords = new ArrayList<>();
+		ArrayList<SearchResult> words = new ArrayList<>();
+		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		for (String word : searchWords) {
-			ArrayList<String> fullWords = containsPartialWord(word);
-			
-			// TODO Adopt this: https://github.com/usf-cs212-2017/lectures/blob/master/Data%20Structures/src/FindDemo.java#L144
-			// for maps instead of sets
-			/*(for (String key : index.keySet()) {
-				if (key.startsWith(query)) {
-					
-				}
-			}*/
-			
-			for (String fullWord : fullWords) {
-				for (String path : index.get(fullWord).keySet()){
-					boolean containsAlready = false;
-					int frequency = index.get(fullWord).get(path).size();
-					int initialPosition = index.get(fullWord).get(path).first();
-					SearchResult searchResult;
-					for (SearchResult result : foundWords) {
-						if (result.hasPath(path)) {
-							containsAlready = true;
-							result.addToFrequency(frequency);
-							result.updateInitialPosition(initialPosition);
-						}
-					}
-					if (!containsAlready) {
-						searchResult = new SearchResult(frequency, initialPosition, path);
-						foundWords.add(searchResult);
-					}
+			for (String key : index.keySet()) {
+				if (key.startsWith(word)) {
+					wordSearch(key, resultMap);
 				}
 			}
 		}
-		Collections.sort(foundWords);
-		return foundWords;
+		words.addAll(resultMap.values());
+		
+		Collections.sort(words);
+		return words;
 	}
-	
 }
-
-
-
-
-
