@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+// TODO No if statements inside of any loops
+
 /**
  * Writes to specified file in JSON format
  */
@@ -68,6 +70,9 @@ public class JSONWriter {
 		writer.write(indent(level - 1) + "]");
 	}
 	
+	// TODO public static void asNestedSet(TreeMap<String, TreeSet<Integer>> elements, Writer writer, int level)
+	// TODO Will simplify the logic in asDoubleNestedObject (making it easier to read) and increase the generality/functionality of your JSONWriter
+	
 	/**
 	 * Writes a DoubleNestedObject to file in JSON format
 	 *
@@ -87,6 +92,9 @@ public class JSONWriter {
 				writer.flush();
 				writer.newLine();
 				TreeMap<String, TreeSet<Integer>> files = index.get(word);
+				
+				// TODO for (String file : headMap not including the last element)
+				// TODO After the for, write the last element without a comma
 				for (String file : files.keySet()) {
 					writer.write(indent(2) + quote(file) + ": ");
 					asArray(writer, files.get(file), 3);
@@ -123,7 +131,7 @@ public class JSONWriter {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("[");
 			writer.newLine();
-			int i = 1;
+			int i = 1; // TODO Remove
 			
 			asArray(writer, elements, 1);
 		}

@@ -138,13 +138,14 @@ public class InvertedIndex {
 	 * @param resultMap
 	 * 			  map to add to or update
 	 */
-	public void wordSearch(String word, HashMap<String, SearchResult> resultMap) {
-		for (String path : index.get(word).keySet()){
+	public void wordSearch(String word, HashMap<String, SearchResult> resultMap) { // TODO Add as a parameter ArrayList<SearchResult> words
+		for (String path : index.get(word).keySet()) {
 			int frequency = index.get(word).get(path).size();
 			int initialPosition = index.get(word).get(path).first();
 			
 			if (!resultMap.containsKey(path)) {
 				resultMap.put(path, new SearchResult(frequency, initialPosition, path));
+				// TODO words.add(resultMap.get(path));
 			}
 			else {
 				SearchResult searchResult = resultMap.get(path);
@@ -167,11 +168,11 @@ public class InvertedIndex {
 		
 		for (String word : searchWords) {
 			if (containsWord(word)) {
-				wordSearch(word, resultMap);
+				wordSearch(word, resultMap); // TODO wordSearch(word, resultMap, words)
 			}
 		}
 		
-		words.addAll(resultMap.values());
+		words.addAll(resultMap.values()); // TODO Remove
 		
 		Collections.sort(words);
 		return words;
@@ -184,7 +185,7 @@ public class InvertedIndex {
 	 *            word to find partial searches for
 	 * @return ArrayList of words
 	 */
-	public ArrayList<String> containsPartialWord(String prefix) {
+	public ArrayList<String> containsPartialWord(String prefix) { // TODO Remove
 		ArrayList<String> list = new ArrayList<>();
 		for (String word : index.keySet()) {
 			if (word.startsWith(prefix)) {
@@ -205,13 +206,15 @@ public class InvertedIndex {
 		ArrayList<SearchResult> words = new ArrayList<>();
 		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		for (String word : searchWords) {
+			// TODO Can make this loop more efficient
+			// TODO index.tailMap(word) and break when no longer startsWith
 			for (String key : index.keySet()) {
 				if (key.startsWith(word)) {
 					wordSearch(key, resultMap);
 				}
 			}
 		}
-		words.addAll(resultMap.values());
+		words.addAll(resultMap.values()); // TODO Remove
 		
 		Collections.sort(words);
 		return words;

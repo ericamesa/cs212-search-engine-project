@@ -3,6 +3,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+// TODO Address warnings
+
 /**
 * Driver class which takes in args and adds words from -path argument to an InvertedIndex and outputs to -index
 * argument. Parses through -query argument, if -exact flag is found searches for exact matches in the inverted index 
@@ -69,6 +71,8 @@ public class Driver {
 				Path path = Paths.get(input);
 				
 				try {
+					// TODO searchIndex.addFromFile(path, index, argumentMap.hasFlag("-exact"));
+					
 					if (argumentMap.hasFlag("-exact")) {
 						searchIndex.addFromFile(path, index, true);
 					}
