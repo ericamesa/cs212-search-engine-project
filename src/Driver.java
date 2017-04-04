@@ -2,9 +2,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-// TODO Address warnings
-
 /**
 * Driver class which takes in args and adds words from -path argument to an InvertedIndex and outputs to -index
 * argument. Parses through -query argument, if -exact flag is found searches for exact matches in the inverted index 
@@ -25,7 +22,7 @@ public class Driver {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
 		InvertedIndex index = new InvertedIndex();
-		SearchIndex searchIndex = new SearchIndex();
+		SearchIndex searchIndex = new SearchIndex(index);
 
 		if (argumentMap.hasFlag("-path")) {
 			if (!argumentMap.hasValue("-path")) {
@@ -71,14 +68,7 @@ public class Driver {
 				Path path = Paths.get(input);
 				
 				try {
-					// TODO searchIndex.addFromFile(path, index, argumentMap.hasFlag("-exact"));
-					
-					if (argumentMap.hasFlag("-exact")) {
-						searchIndex.addFromFile(path, index, true);
-					}
-					else {
-						searchIndex.addFromFile(path, index, false);
-					}
+					searchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
 					
 				} catch (IOException e) {
 					System.out.println("The path you provided could not be read through.");

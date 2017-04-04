@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.TreeMap;
 
 /**
@@ -17,13 +16,14 @@ public class SearchIndex {
 	 * Stores a mapping of words to an ArrayList of SearchResults.
 	 */
 	private final TreeMap<String, ArrayList<SearchResult>> index;
-	// TODO private final InvertedIndex invertedIndex;
+	private final InvertedIndex invertedIndex;
 
 	/**
 	 * Initializes the index.
 	 */
-	public SearchIndex() { // TODO init invertedIndex here
+	public SearchIndex(InvertedIndex invertedIndex) {
 		index = new TreeMap<>();
+		this.invertedIndex = invertedIndex;
 	}
 	
 	/**
@@ -36,8 +36,7 @@ public class SearchIndex {
 	 * @param exact
 	 *            true if searching for exact matches, false to search for partial matches
 	 */
-	public void addFromFile(Path path, InvertedIndex invertedIndex, Boolean exact) throws IOException { // TODO Remove invertedIndex from here
-		HashSet<String[]> set = new HashSet<>(); // TODO Remove
+	public void addFromFile(Path path, Boolean exact) throws IOException {
 		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			String line;
 			String[] words;

@@ -9,8 +9,6 @@ import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-// TODO No if statements inside of any loops
-
 /**
  * Writes to specified file in JSON format
  */
@@ -70,8 +68,35 @@ public class JSONWriter {
 		writer.write(indent(level - 1) + "]");
 	}
 	
-	// TODO public static void asNestedSet(TreeMap<String, TreeSet<Integer>> elements, Writer writer, int level)
-	// TODO Will simplify the logic in asDoubleNestedObject (making it easier to read) and increase the generality/functionality of your JSONWriter
+	/**
+	 * Writes the nested set of elements as a JSON array at the specified indent level.
+	 *
+	 * @param elements
+	 *            nested object to writer to file
+	 * @param writer
+	 *            writer to use for output
+	 * @param level
+	 *            number of times to indent the nested set itself
+	 * @throws IOException
+	 */
+	public static void asNestedSet(TreeMap<String, TreeSet<Integer>> elements, BufferedWriter writer, int level) throws IOException {
+		writer.write("{");
+		writer.newLine();
+		
+		if (!elements.isEmpty()) {
+			for (String file : elements.headMap(elements.lastKey(), false).navigableKeySet()) {
+				writer.write(indent(level) + quote(file) + ": ");
+				asArray(writer, elements.get(file), level + 1);
+				writer.write(",");
+				writer.flush();
+				writer.newLine();
+			}
+			writer.write(indent(level) + quote(elements.lastKey()) + ": ");
+			asArray(writer, elements.get(elements.lastKey()), level + 1);
+			writer.newLine();
+		}
+		writer.write(indent(level - 1) + "}");
+	}
 	
 	/**
 	 * Writes a DoubleNestedObject to file in JSON format
@@ -87,28 +112,17 @@ public class JSONWriter {
 			writer.write("{");
 			writer.flush();
 			writer.newLine();
-			for (String word : index.keySet()) {
-				writer.write(indent(1) + quote(word) + ": {");
-				writer.flush();
-				writer.newLine();
-				TreeMap<String, TreeSet<Integer>> files = index.get(word);
-				
-				// TODO for (String file : headMap not including the last element)
-				// TODO After the for, write the last element without a comma
-				for (String file : files.keySet()) {
-					writer.write(indent(2) + quote(file) + ": ");
-					asArray(writer, files.get(file), 3);
-					if (!files.lastKey().equals(file)) {
-						writer.write(",");
-					}
+			
+			if (!index.isEmpty()) {
+				for (String word : index.headMap(index.lastKey(), false).navigableKeySet()) {
+					writer.write(indent(1) + quote(word) + ": ");
+					asNestedSet(index.get(word), writer, 2);
+					writer.write(",");
 					writer.flush();
 					writer.newLine();
 				}
-				writer.write(indent(1) + "}");
-				if (!index.lastKey().equals(word)) {
-					writer.write(",");
-				}
-				writer.flush();
+				writer.write(indent(1) + quote(index.lastKey()) + ": ");
+				asNestedSet(index.get(index.lastKey()), writer, 1);
 				writer.newLine();
 			}
 			writer.write("}");
@@ -131,7 +145,6 @@ public class JSONWriter {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
 			writer.write("[");
 			writer.newLine();
-			int i = 1; // TODO Remove
 			
 			asArray(writer, elements, 1);
 		}
