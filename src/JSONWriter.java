@@ -172,41 +172,56 @@ public class JSONWriter {
 				writer.newLine();
 				writer.write(indent(2) + quote("results") + ": [");
 				writer.newLine();
-				int i = index.get(query).size();
 				
-				// TODO Can get the sublist including everything except the last element
-				for (SearchResult result : index.get(query)) {
+				if (!index.get(query).isEmpty()) {
+					for (SearchResult result : index.get(query).subList(0, index.get(query).size() - 1)) {
+						writer.write(indent(3) + "{");
+						writer.flush();
+						writer.newLine();
+
+						writer.write(indent(4) + quote("where") + ": "+ quote(result.path) + ",");
+						writer.newLine();
+
+						writer.write(indent(4) + quote("count") + ": " + result.frequency() + ",");
+						writer.newLine();
+
+						writer.write(indent(4) + quote("index") + ": " + result.initialPosition());
+						writer.newLine();
+
+						writer.write(indent(3) + "},");
+						writer.flush();
+						writer.newLine();
+					}
+					SearchResult result = index.get(query).get(index.get(query).size() - 1);
 					writer.write(indent(3) + "{");
 					writer.flush();
 					writer.newLine();
-					
+
 					writer.write(indent(4) + quote("where") + ": "+ quote(result.path) + ",");
 					writer.newLine();
-					
+
 					writer.write(indent(4) + quote("count") + ": " + result.frequency() + ",");
 					writer.newLine();
-					
+
 					writer.write(indent(4) + quote("index") + ": " + result.initialPosition());
 					writer.newLine();
-					
+
 					writer.write(indent(3) + "}");
-					if (i > 1) {
-						writer.write(",");
-					}
 					writer.flush();
 					writer.newLine();
-					i--;
 				}
 				
 				writer.write(indent(2) + "]");
 				writer.newLine();
 				writer.write(indent(1) + "}");
+				
 				if (!query.equals(index.lastKey())) {
 					writer.write(",");
 				}
 				writer.flush();
 				writer.newLine();
 			}
+			
 			writer.write("]");
 			writer.flush();
 			writer.newLine();
