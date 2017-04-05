@@ -128,6 +128,7 @@ public class InvertedIndex {
 		return containsPath(word, path) && index.get(word).get(path).contains(position);
 	}
 	
+	// TODO Make this private
 	/**
 	 * Helper method for exact and partial search, which goes through each path of word in index and adds the 
 	 * path, frequency, and initial position of word and if path is already in map, adds to frequency and updates

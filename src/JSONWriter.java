@@ -173,6 +173,8 @@ public class JSONWriter {
 				writer.write(indent(2) + quote("results") + ": [");
 				writer.newLine();
 				int i = index.get(query).size();
+				
+				// TODO Can get the sublist including everything except the last element
 				for (SearchResult result : index.get(query)) {
 					writer.write(indent(3) + "{");
 					writer.flush();
