@@ -22,7 +22,19 @@ public class Driver {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
 		InvertedIndex index = new InvertedIndex();
+		ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 		SearchIndex searchIndex = new SearchIndex(index);
+		ThreadSafeSearchIndex threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex);
+		WorkQueue queue = new WorkQueue();
+		boolean hasThreads = argumentMap.hasFlag("-threads");
+		
+		if (hasThreads) {
+			int num = argumentMap.getInteger("-threads", 5);
+			if (num <= 0) {
+				num = 5;
+			}
+			queue = new WorkQueue(num);
+		}
 
 		if (argumentMap.hasFlag("-path")) {
 			if (!argumentMap.hasValue("-path")) {
@@ -33,12 +45,22 @@ public class Driver {
 				String input = argumentMap.getString("-path");
 				Path path = Paths.get(input);
 				try {
-					if (Files.isDirectory(path)) {
-						InvertedIndexBuilder.throughDirectory(path, index);
-					} else {
-						InvertedIndexBuilder.throughHTMLFile(path, input, index);
-
+					if (hasThreads) {
+						if (Files.isDirectory(path)) {
+							MultithreadedInvertedIndexBuilder.throughDirectory(path, threadSafeIndex, queue);
+						} else {
+							MultithreadedInvertedIndexBuilder.throughHTMLFile(path, input, threadSafeIndex);
+						}
+						queue.finish();
 					}
+					else {
+						if (Files.isDirectory(path)) {
+							InvertedIndexBuilder.throughDirectory(path, index);
+						} else {
+							InvertedIndexBuilder.throughHTMLFile(path, input, index);
+						}
+					}
+					
 				} catch (IOException e) {
 					System.out.println("The path you provided could not be read through.");
 					return;
@@ -51,7 +73,13 @@ public class Driver {
 			String output = argumentMap.getString("-index", "index.json");
 			Path outputPath = Paths.get(output);
 			try {
-				index.toJSON(outputPath);
+				if (hasThreads) {
+					threadSafeIndex.toJSON(outputPath);
+				}
+				else {
+					index.toJSON(outputPath);
+				}
+				
 			} catch (IOException e) {
 				System.out.println("Could not write to file.");
 			}
@@ -68,7 +96,13 @@ public class Driver {
 				Path path = Paths.get(input);
 				
 				try {
-					searchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
+					if (hasThreads) {
+						threadSafeSearchIndex.addFromFile(path, argumentMap.hasFlag("-exact"), queue);
+						queue.finish();
+					}
+					else {
+						searchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
+					}
 					
 				} catch (IOException e) {
 					System.out.println("The path you provided could not be read through.");
@@ -83,11 +117,19 @@ public class Driver {
 			String output = argumentMap.getString("-results", "results.json");
 			Path path = Paths.get(output);
 			try {
-				searchIndex.toJSON(path);
+				if (hasThreads) {
+					threadSafeSearchIndex.toJSON(path);
+				}
+				else {
+					searchIndex.toJSON(path);
+				}
+				
 			} catch (IOException e) {
 				System.out.println("Could not write to file.");
 			}
 		}
+		
+		queue.shutdown();
 		
 	}
 
