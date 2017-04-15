@@ -78,8 +78,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 			add(word, filename, i);
 			i++;
 		}
-		
-
 	}
 
 	/**

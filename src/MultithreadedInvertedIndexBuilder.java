@@ -21,7 +21,8 @@ public class MultithreadedInvertedIndexBuilder {
 	 *            InvertedIndex to add to
 	 */
 	public static void throughDirectory(Path path, ThreadSafeInvertedIndex index, WorkQueue queue) throws IOException {
-		queue.execute(new Task(path, index, queue));
+		MultithreadedInvertedIndexBuilder builder = new MultithreadedInvertedIndexBuilder(queue);
+		builder.start(path, index);
 	}
 
 	/**
@@ -52,17 +53,26 @@ public class MultithreadedInvertedIndexBuilder {
 			}
 		}
 	}
+
+	private final WorkQueue queue;
 	
-	private static class Task implements Runnable {
+	private MultithreadedInvertedIndexBuilder(WorkQueue queue) {
+		this.queue = queue;
+	}
+	
+	private void start(Path path, ThreadSafeInvertedIndex index) {
+		queue.execute(new Task(path, index));
+	}
+	
+	
+	private class Task implements Runnable {
 
 		Path path;
 		ThreadSafeInvertedIndex index;
-		WorkQueue queue;
 		
-		public Task(Path path, ThreadSafeInvertedIndex index, WorkQueue queue) {
+		public Task(Path path, ThreadSafeInvertedIndex index) {
 			this.path = path;
 			this.index = index;
-			this.queue = queue;
 		}
 		
 		@Override
@@ -70,14 +80,13 @@ public class MultithreadedInvertedIndexBuilder {
 			try (DirectoryStream<Path> directory = Files.newDirectoryStream(path);) {
 				for (Path file : directory) {
 					if (Files.isDirectory(file)) {
-						queue.execute(new Task(file, index, queue));
+						queue.execute(new Task(file, index));
 					} else {
 						String filename = file.toString();
 						throughHTMLFile(file, filename, index);
 					}
 				}
 				directory.close();
-				
 				
 			} catch (IOException e) {
 				System.out.println("The path you provided could not be read through.");
