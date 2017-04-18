@@ -13,9 +13,12 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	/**
 	 * Stores a mapping of words to the positions the words were found.
 	 */
-	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index; // TODO Remove
 	private ReadWriteLock lock;
 
+	// TODO Instead of accessing index here, call super.add(), super.addAll(), etc.
+	// TODO https://github.com/usf-cs212-2017/lectures/blob/master/Multithreading%20-%20Synchronization/src/ConcurrentSet.java
+	
 	/**
 	 * Initializes the index.
 	 */

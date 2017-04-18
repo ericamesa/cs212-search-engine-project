@@ -22,6 +22,7 @@ public class InvertedIndex {
 		index = new TreeMap<>();
 	}
 
+	// TODO Change this to a private void addHelper(...);
 	/**
 	 * Adds the word and the file it was found in and the position it was in the
 	 * file to the index.
@@ -40,7 +41,20 @@ public class InvertedIndex {
 		}
 		index.get(word).get(file).add(position);
 	}
+	
+	/* TODO
+	 * Create a new add method:
+	 * 
+	 * public void add(String word, String file, int position) {
+	 * 		addHelper(word, file, position);
+	 * }
+	 * 
+	 * Change your addAll() to...
+	 * 		for (...)
+	 * 			addHelper(...);
+	 */
 
+	// TODO Possible deadlock
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at position 1.
@@ -54,6 +68,7 @@ public class InvertedIndex {
 		addAll(words, filename, 1);
 	}
 
+	// TODO Possible deadlock
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at the provided starting position
@@ -100,6 +115,7 @@ public class InvertedIndex {
 		return index.containsKey(word);
 	}
 	
+	// TODO Possible deadlock
 	/**
 	 * Checks to see if index contains path given for the specified word
 	 *
@@ -113,6 +129,7 @@ public class InvertedIndex {
 		return (containsWord(word) && index.get(word).containsKey(path));
 	}
 	
+	// TODO Possible deadlock
 	/**
 	 * Checks to see if index contains position given for the specified word and path
 	 *

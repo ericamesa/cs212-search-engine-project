@@ -38,6 +38,7 @@ public class ThreadSafeSearchIndex {
 			String line;
 			String[] words;
 			while ((line = br.readLine()) != null) {
+				// TODO Move more into the task
 				words = WordParser.parseWords(line);
 				Arrays.sort(words);
 				
@@ -58,7 +59,7 @@ public class ThreadSafeSearchIndex {
 		JSONWriter.asNestedObject(index, path);
 	}
 	
-	
+	// TODO If you make this non-static, you do not need to pass in a reference to index
 	private static class Task implements Runnable {
 
 		ThreadSafeInvertedIndex invertedIndex;

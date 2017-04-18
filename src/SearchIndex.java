@@ -7,6 +7,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
+/*
+ * TODO
+ * Create a SearchIndexInterface
+ * toJSON() method
+ * addFromFile() method
+ * 
+ * Implement this interface in both SearchIndex and ThreadSafeSearchIndex
+ */
+
 /**
  * Data structure to store words and their SearchResults.
  */

@@ -25,6 +25,7 @@ public class MultithreadedInvertedIndexBuilder {
 		builder.start(path, index);
 	}
 
+	// TODO Remove
 	/**
 	 * Goes through specified HTML file and adds each word to index
 	 *
@@ -64,6 +65,24 @@ public class MultithreadedInvertedIndexBuilder {
 		queue.execute(new Task(path, index));
 	}
 	
+	/*
+	 * TODO
+	 * start(...) {
+	 * 		try (DirectoryStream<Path> directory = Files.newDirectoryStream(path);) {
+			for (Path file : directory) {
+				if (Files.isDirectory(file)) {
+					start(file, index);
+				} else {
+
+					// CREATE A TASK HERE FOR THE FILE
+				}
+			}
+			directory.close();
+		}
+	 * 
+	 * }
+	 * 
+	 */
 	
 	private class Task implements Runnable {
 
@@ -83,6 +102,8 @@ public class MultithreadedInvertedIndexBuilder {
 						queue.execute(new Task(file, index));
 					} else {
 						String filename = file.toString();
+						
+						// TODO InvertedIndexBuilder.throughHTMLFile
 						throughHTMLFile(file, filename, index);
 					}
 				}
