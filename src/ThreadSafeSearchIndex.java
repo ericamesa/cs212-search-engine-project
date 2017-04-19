@@ -7,20 +7,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-public class ThreadSafeSearchIndex {
+public class ThreadSafeSearchIndex implements SearchIndexInterface {
 
 	/**
 	 * Stores a mapping of words to an ArrayList of SearchResults.
 	 */
 	private final TreeMap<String, ArrayList<SearchResult>> index;
 	private final ThreadSafeInvertedIndex invertedIndex;
+	private WorkQueue queue;
 
 	/**
 	 * Initializes the index.
 	 */
-	public ThreadSafeSearchIndex(ThreadSafeInvertedIndex invertedIndex) {
+	public ThreadSafeSearchIndex(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
 		index = new TreeMap<>();
 		this.invertedIndex = invertedIndex; 
+		this.queue = queue;
 	}
 	
 	/**
@@ -33,17 +35,12 @@ public class ThreadSafeSearchIndex {
 	 * @param exact
 	 *            true if searching for exact matches, false to search for partial matches
 	 */
-	public void addFromFile(Path path, Boolean exact, WorkQueue queue) throws IOException {
+	@Override
+	public void addFromFile(Path path, Boolean exact) throws IOException {
 		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			String line;
-			String[] words;
 			while ((line = br.readLine()) != null) {
-				// TODO Move more into the task
-				words = WordParser.parseWords(line);
-				Arrays.sort(words);
-				
-				queue.execute(new Task(invertedIndex, index, words, exact));
-				
+				queue.execute(new Task(line, exact));
 			}
 		}
 		
@@ -55,27 +52,25 @@ public class ThreadSafeSearchIndex {
 	 * @param path
 	 *            path to write to
 	 */
+	@Override
 	public void toJSON(Path path) throws IOException {
 		JSONWriter.asNestedObject(index, path);
 	}
 	
-	// TODO If you make this non-static, you do not need to pass in a reference to index
-	private static class Task implements Runnable {
-
-		ThreadSafeInvertedIndex invertedIndex;
-		TreeMap<String, ArrayList<SearchResult>> index;
-		private String[] words;
+	private class Task implements Runnable {
+		
+		private String line;
 		private boolean exact;
 		
-		public Task(ThreadSafeInvertedIndex invertedIndex, TreeMap<String, ArrayList<SearchResult>> index, String[] words, boolean exact) {
-			this.invertedIndex = invertedIndex;
-			this.index = index;
-			this.words = words;
+		public Task(String line, boolean exact) {
+			this.line = line;
 			this.exact = exact;
 		}
 		
 		@Override
 		public void run() {
+			String[] words = WordParser.parseWords(line);
+			Arrays.sort(words);
 			if (words.length > 0) {
 				ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words);
 				synchronized (index) {
@@ -85,5 +80,7 @@ public class ThreadSafeSearchIndex {
 			
 		}
 	}
+
+	
 
 }

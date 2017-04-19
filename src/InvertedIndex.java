@@ -22,17 +22,19 @@ public class InvertedIndex {
 		index = new TreeMap<>();
 	}
 
-	// TODO Change this to a private void addHelper(...);
 	/**
-	 * Adds the word and the file it was found in and the position it was in the
-	 * file to the index.
+	 * Private helper method that adds the word and the file it was found in and 
+	 * the position it was in the file to the index.
 	 *
 	 * @param word
 	 *            word to clean and add to index
+	 * @param file	
+	 * 			  file word was found in
 	 * @param position
 	 *            position word was found
 	 */
-	public void add(String word, String file, int position) {
+	private void addHelper(String word, String file, int position) {
+		
 		if (index.get(word) == null) {
 			index.put(word, new TreeMap<>());
 		} 
@@ -42,19 +44,21 @@ public class InvertedIndex {
 		index.get(word).get(file).add(position);
 	}
 	
-	/* TODO
-	 * Create a new add method:
-	 * 
-	 * public void add(String word, String file, int position) {
-	 * 		addHelper(word, file, position);
-	 * }
-	 * 
-	 * Change your addAll() to...
-	 * 		for (...)
-	 * 			addHelper(...);
+	/**
+	 * Adds the word and the file it was found in and the position it was in the 
+	 * file to the index.
+	 *
+	 * @param word
+	 *            word to clean and add to index
+	 * @param file	
+	 * 			  file word was found in
+	 * @param position
+	 *            position word was found
 	 */
+	public void add(String word, String file, int position) {
+	  	addHelper(word, file, position);
+	}
 
-	// TODO Possible deadlock
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at position 1.
@@ -68,7 +72,6 @@ public class InvertedIndex {
 		addAll(words, filename, 1);
 	}
 
-	// TODO Possible deadlock
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at the provided starting position
@@ -78,10 +81,11 @@ public class InvertedIndex {
 	 * @param start
 	 *            starting position
 	 */
-	public void addAll(String[] words, String filename, int start) {
+	private void addAll(String[] words, String filename, int start) {
+		System.out.println("hello");
 		int i = start;
 		for (String word : words) {
-			add(word, filename, i);
+			addHelper(word, filename, i);
 			i++;
 		}
 	}

@@ -29,8 +29,7 @@ public class ReadWriteLock {
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
-				// TODO Thread.currentThread.interrupt() no stack traces!
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 		}
 		readers++;
@@ -42,7 +41,9 @@ public class ReadWriteLock {
 	 */
 	public synchronized void unlockReadOnly() {
 		readers--;
-		this.notifyAll(); // TODO Only do this when readers == 0
+		if (readers == 0) {
+			this.notifyAll();
+		}
 	}
 
 	/**
@@ -55,8 +56,7 @@ public class ReadWriteLock {
 			try {
 				this.wait();
 			} catch (InterruptedException e) {
-				// TODO Thread.currentThread.interrupt() no stack traces!
-				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 		}
 		writers++;

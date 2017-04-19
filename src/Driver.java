@@ -22,10 +22,10 @@ public class Driver {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
 		InvertedIndex index = new InvertedIndex();
-		ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 		SearchIndex searchIndex = new SearchIndex(index);
-		ThreadSafeSearchIndex threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex);
 		WorkQueue queue = new WorkQueue();
+		ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
+		ThreadSafeSearchIndex threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
 		boolean hasThreads = argumentMap.hasFlag("-threads");
 		
 		if (hasThreads) {
@@ -49,7 +49,7 @@ public class Driver {
 						if (Files.isDirectory(path)) {
 							MultithreadedInvertedIndexBuilder.throughDirectory(path, threadSafeIndex, queue);
 						} else {
-							MultithreadedInvertedIndexBuilder.throughHTMLFile(path, input, threadSafeIndex);
+							InvertedIndexBuilder.throughHTMLFile(path, input, threadSafeIndex);
 						}
 						queue.finish();
 					}
@@ -97,7 +97,7 @@ public class Driver {
 				
 				try {
 					if (hasThreads) {
-						threadSafeSearchIndex.addFromFile(path, argumentMap.hasFlag("-exact"), queue);
+						threadSafeSearchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
 						queue.finish();
 					}
 					else {

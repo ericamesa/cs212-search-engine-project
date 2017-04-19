@@ -1,29 +1,21 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Data structure to store words, their path, and their positions.
  */
-public class ThreadSafeInvertedIndex extends InvertedIndex{
+public class ThreadSafeInvertedIndex extends InvertedIndex {
 	/**
 	 * Stores a mapping of words to the positions the words were found.
 	 */
-	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> index; // TODO Remove
 	private ReadWriteLock lock;
-
-	// TODO Instead of accessing index here, call super.add(), super.addAll(), etc.
-	// TODO https://github.com/usf-cs212-2017/lectures/blob/master/Multithreading%20-%20Synchronization/src/ConcurrentSet.java
 	
 	/**
 	 * Initializes the index.
 	 */
 	public ThreadSafeInvertedIndex() {
-		index = new TreeMap<>();
+		super();
 		lock = new ReadWriteLock();
 	}
 
@@ -40,13 +32,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	public void add(String word, String file, int position) {
 		lock.lockReadWrite();
 
-		if (index.get(word) == null) {
-			index.put(word, new TreeMap<>());
-		} 
-		if (index.get(word).get(file) == null) {
-			index.get(word).put(file, new TreeSet<>());
-		}
-		index.get(word).get(file).add(position);
+		super.add(word, file, position);
 
 		lock.unlockReadWrite();
 	}
@@ -62,26 +48,28 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	 */
 	@Override
 	public void addAll(String[] words, String filename) {
-		addAll(words, filename, 1);
+		lock.lockReadWrite();
+		super.addAll(words, filename);
+		lock.unlockReadOnly();
 	}
 
-	/**
-	 * Adds the array of words at once, assuming the first word in the array is
-	 * at the provided starting position
-	 *
-	 * @param words
-	 *            array of words to add
-	 * @param start
-	 *            starting position
-	 */
-	@Override
-	public void addAll(String[] words, String filename, int start) {
-		int i = start;
-		for (String word : words) {
-			add(word, filename, i);
-			i++;
-		}
-	}
+//	/**
+//	 * Adds the array of words at once, assuming the first word in the array is
+//	 * at the provided starting position
+//	 *
+//	 * @param words
+//	 *            array of words to add
+//	 * @param start
+//	 *            starting position
+//	 */
+//	@Override
+//	public void addAll(String[] words, String filename, int start) {
+//		lock.lockReadWrite();
+//		
+//		super.addAll(words, filename, start);
+//		
+//		lock.unlockReadWrite();
+//	}
 
 	/**
 	 * Writes index to specified path in JSON format.
@@ -93,7 +81,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	public void toJSON(Path path) throws IOException {
 		lock.lockReadOnly();
 		
-		JSONWriter.asDoubleNestedObject(index, path);
+		super.toJSON(path);
 		
 		lock.unlockReadOnly();
 	}
@@ -106,7 +94,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 		lock.lockReadOnly();
 
 		try {
-			return index.toString();
+			return super.toString();
 		} finally {
 
 			lock.unlockReadOnly();
@@ -124,7 +112,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	public boolean containsWord(String word) {
 		lock.lockReadOnly();
 		try {
-			return index.containsKey(word);
+			return super.containsWord(word);
 		} finally {
 			lock.unlockReadOnly();
 		}
@@ -144,7 +132,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	public boolean containsPath(String word, String path) {
 		lock.lockReadOnly();
 		try {
-			return (containsWord(word) && index.get(word).containsKey(path));
+			return super.containsPath(word, path);
 		} finally {
 			lock.unlockReadOnly();
 		}
@@ -165,36 +153,9 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	public boolean containsPosition(String word, String path, Integer position) {
 		lock.lockReadOnly();
 		try {
-			return containsPath(word, path) && index.get(word).get(path).contains(position);
+			return super.containsPosition(word, path, position);
 		} finally {
 			lock.unlockReadOnly();
-		}
-	}
-
-	/**
-	 * Helper method for exact and partial search, which goes through each path of word in index and adds the 
-	 * path, frequency, and initial position of word and if path is already in map, adds to frequency and updates
-	 * initial position if necessary.
-	 *
-	 * @param word
-	 *            word to search for
-	 * @param resultMap
-	 * 			  map to add to or update
-	 */
-	private void wordSearch(String word, HashMap<String, SearchResult> resultMap, ArrayList<SearchResult> words) {
-		for (String path : index.get(word).keySet()) {
-			int frequency = index.get(word).get(path).size();
-			int initialPosition = index.get(word).get(path).first();
-
-			if (!resultMap.containsKey(path)) {
-				resultMap.put(path, new SearchResult(frequency, initialPosition, path));
-				words.add(resultMap.get(path));
-			}
-			else {
-				SearchResult searchResult = resultMap.get(path);
-				searchResult.addToFrequency(frequency);
-				searchResult.updateInitialPosition(initialPosition);
-			}
 		}
 	}
 
@@ -207,19 +168,13 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	 */
 	@Override
 	public ArrayList<SearchResult> exactSearch(String[] searchWords) {
-		ArrayList<SearchResult> words = new ArrayList<>();
-		HashMap<String, SearchResult> resultMap = new HashMap<>();
-
 		lock.lockReadOnly();
-		for (String word : searchWords) {
-			if (containsWord(word)) {
-				wordSearch(word, resultMap, words);
-			}
+		try {
+			return super.exactSearch(searchWords);
 		}
-		lock.unlockReadOnly();
-
-		Collections.sort(words);
-		return words;
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 
 	/**
@@ -231,32 +186,13 @@ public class ThreadSafeInvertedIndex extends InvertedIndex{
 	 */
 	@Override
 	public ArrayList<SearchResult> partialSearch(String[] searchWords) {
-		ArrayList<SearchResult> words = new ArrayList<>();
-		HashMap<String, SearchResult> resultMap = new HashMap<>();
 		lock.lockReadOnly();
-		for (String word : searchWords) {
-			for (String key : index.tailMap(word, true).navigableKeySet()) {
-				if (key.startsWith(word)) {
-					wordSearch(key, resultMap, words);
-				}
-				else {
-					break;
-				}
-			}
+		try {
+			return super.partialSearch(searchWords);
 		}
-		lock.unlockReadOnly();
-
-		Collections.sort(words);
-		return words;
+		finally {
+			lock.unlockReadOnly();
+		}
 	}
 	
 }
-
-
-
-
-
-
-
-
-

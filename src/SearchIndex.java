@@ -7,19 +7,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
-/*
- * TODO
- * Create a SearchIndexInterface
- * toJSON() method
- * addFromFile() method
- * 
- * Implement this interface in both SearchIndex and ThreadSafeSearchIndex
- */
-
 /**
  * Data structure to store words and their SearchResults.
  */
-public class SearchIndex {
+public class SearchIndex implements SearchIndexInterface {
 
 	/**
 	 * Stores a mapping of words to an ArrayList of SearchResults.
@@ -45,6 +36,7 @@ public class SearchIndex {
 	 * @param exact
 	 *            true if searching for exact matches, false to search for partial matches
 	 */
+	@Override
 	public void addFromFile(Path path, Boolean exact) throws IOException {
 		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
 			String line;
@@ -69,6 +61,7 @@ public class SearchIndex {
 	 * @param path
 	 *            path to write to
 	 */
+	@Override
 	public void toJSON(Path path) throws IOException {
 		JSONWriter.asNestedObject(index, path);
 	}
