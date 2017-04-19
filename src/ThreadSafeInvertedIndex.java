@@ -53,23 +53,23 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		lock.unlockReadOnly();
 	}
 
-//	/**
-//	 * Adds the array of words at once, assuming the first word in the array is
-//	 * at the provided starting position
-//	 *
-//	 * @param words
-//	 *            array of words to add
-//	 * @param start
-//	 *            starting position
-//	 */
-//	@Override
-//	public void addAll(String[] words, String filename, int start) {
-//		lock.lockReadWrite();
-//		
-//		super.addAll(words, filename, start);
-//		
-//		lock.unlockReadWrite();
-//	}
+	/**
+	 * Adds the array of words at once, assuming the first word in the array is
+	 * at the provided starting position
+	 *
+	 * @param words
+	 *            array of words to add
+	 * @param start
+	 *            starting position
+	 */
+	@Override
+	public void addAll(String[] words, String filename, int start)  {
+		lock.lockReadWrite();
+		
+		super.addAll(words, filename, start);
+		
+		lock.unlockReadWrite();
+	}
 
 	/**
 	 * Writes index to specified path in JSON format.

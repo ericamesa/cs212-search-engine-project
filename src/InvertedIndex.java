@@ -81,8 +81,7 @@ public class InvertedIndex {
 	 * @param start
 	 *            starting position
 	 */
-	private void addAll(String[] words, String filename, int start) {
-		System.out.println("hello");
+	public void addAll(String[] words, String filename, int start) {
 		int i = start;
 		for (String word : words) {
 			addHelper(word, filename, i);
