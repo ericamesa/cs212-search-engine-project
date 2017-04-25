@@ -3,11 +3,16 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+
 /**
  * Builds Inverted Index by going through directories and/or files and adds each word.
  */
 public class MultithreadedInvertedIndexBuilder {
 	
+	Logger logger = LogManager.getLogger();
 	/**
 	 * Streams through a directory
 	 *
@@ -33,7 +38,7 @@ public class MultithreadedInvertedIndexBuilder {
 				if (Files.isDirectory(file)) {
 					start(file, index);
 				} else {
-					queue.execute(new Task(path, index));
+					queue.execute(new Task(file, index));
 				}
 			}
 			directory.close();
@@ -52,12 +57,14 @@ public class MultithreadedInvertedIndexBuilder {
 		
 		@Override
 		public void run() {
+			logger.debug("Starting {}", path);
 			String filename = path.toString();
 			try {
 				InvertedIndexBuilder.throughHTMLFile(path, filename, index);
 			} catch (IOException e) {
 				Thread.currentThread().interrupt();
 			}
+			logger.debug("Finsihed {}", path);
 		}
 		
 	}

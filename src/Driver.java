@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
 * Driver class which takes in args and adds words from -path argument to an InvertedIndex and outputs to -index
 * argument. Parses through -query argument, if -exact flag is found searches for exact matches in the inverted index 
@@ -27,6 +30,7 @@ public class Driver {
 		ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 		ThreadSafeSearchIndex threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
 		boolean hasThreads = argumentMap.hasFlag("-threads");
+		Logger logger = LogManager.getLogger();
 		
 		if (hasThreads) {
 			int num = argumentMap.getInteger("-threads", 5);
@@ -72,6 +76,7 @@ public class Driver {
 		if (argumentMap.hasFlag("-index")) {
 			String output = argumentMap.getString("-index", "index.json");
 			Path outputPath = Paths.get(output);
+			logger.debug("outputing to JSON");
 			try {
 				if (hasThreads) {
 					threadSafeIndex.toJSON(outputPath);

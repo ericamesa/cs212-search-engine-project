@@ -34,7 +34,6 @@ public class InvertedIndex {
 	 *            position word was found
 	 */
 	private void addHelper(String word, String file, int position) {
-		
 		if (index.get(word) == null) {
 			index.put(word, new TreeMap<>());
 		} 
@@ -118,7 +117,6 @@ public class InvertedIndex {
 		return index.containsKey(word);
 	}
 	
-	// TODO Possible deadlock
 	/**
 	 * Checks to see if index contains path given for the specified word
 	 *
@@ -132,7 +130,6 @@ public class InvertedIndex {
 		return (containsWord(word) && index.get(word).containsKey(path));
 	}
 	
-	// TODO Possible deadlock
 	/**
 	 * Checks to see if index contains position given for the specified word and path
 	 *
