@@ -18,6 +18,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 	private final TreeMap<String, ArrayList<SearchResult>> index;
 	private final ThreadSafeInvertedIndex invertedIndex;
 	private WorkQueue queue;
+	private ReadWriteLock lock;
 	Logger logger = LogManager.getLogger();
 
 	/**
@@ -27,6 +28,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 		index = new TreeMap<>();
 		this.invertedIndex = invertedIndex; 
 		this.queue = queue;
+		lock = new ReadWriteLock();
 	}
 	
 	/**
@@ -58,7 +60,9 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 	 */
 	@Override
 	public void toJSON(Path path) throws IOException {
+		lock.lockReadOnly();
 		JSONWriter.asNestedObject(index, path);
+		lock.unlockReadOnly();
 	}
 	
 	private class Task implements Runnable {
@@ -78,9 +82,9 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 			Arrays.sort(words);
 			if (words.length > 0) {
 				ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words);
-				synchronized (index) {
-					index.put(String.join(" ", words), results);
-				}
+				lock.lockReadWrite();
+				index.put(String.join(" ", words), results);
+				lock.unlockReadWrite();
 			}
 			logger.debug("Finished {}", line);
 			

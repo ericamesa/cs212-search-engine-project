@@ -38,6 +38,7 @@ public class Driver {
 				num = 5;
 			}
 			queue = new WorkQueue(num);
+			threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
 		}
 
 		if (argumentMap.hasFlag("-path")) {
