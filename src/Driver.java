@@ -121,6 +121,7 @@ public class Driver {
 		if (argumentMap.hasFlag("-results")) {
 			String output = argumentMap.getString("-results", "results.json");
 			Path path = Paths.get(output);
+			logger.debug("Outputing to JSON");
 			try {
 				if (hasThreads) {
 					threadSafeSearchIndex.toJSON(path);

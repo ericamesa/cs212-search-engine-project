@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.TreeMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class ThreadSafeSearchIndex implements SearchIndexInterface {
 
 	/**
@@ -15,6 +18,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 	private final TreeMap<String, ArrayList<SearchResult>> index;
 	private final ThreadSafeInvertedIndex invertedIndex;
 	private WorkQueue queue;
+	Logger logger = LogManager.getLogger();
 
 	/**
 	 * Initializes the index.
@@ -69,6 +73,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 		
 		@Override
 		public void run() {
+			logger.debug("Starting {}", line);
 			String[] words = WordParser.parseWords(line);
 			Arrays.sort(words);
 			if (words.length > 0) {
@@ -77,6 +82,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 					index.put(String.join(" ", words), results);
 				}
 			}
+			logger.debug("Finished {}", line);
 			
 		}
 	}

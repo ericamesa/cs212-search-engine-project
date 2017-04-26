@@ -48,7 +48,9 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	 */
 	@Override
 	public void addAll(String[] words, String filename) {
+		lock.lockReadWrite();
 		super.addAll(words, filename, 1);
+		lock.unlockReadWrite();
 	}
 
 	/**

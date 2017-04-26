@@ -57,14 +57,14 @@ public class MultithreadedInvertedIndexBuilder {
 		
 		@Override
 		public void run() {
-			logger.debug("Starting {}", path);
+			//logger.debug("Starting {}", path);
 			String filename = path.toString();
 			try {
 				InvertedIndexBuilder.throughHTMLFile(path, filename, index);
 			} catch (IOException e) {
 				Thread.currentThread().interrupt();
 			}
-			logger.debug("Finsihed {}", path);
+			//logger.debug("Finsihed {}", path);
 		}
 		
 	}
