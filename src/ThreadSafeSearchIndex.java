@@ -49,7 +49,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 				queue.execute(new Task(line, exact));
 			}
 		}
-		
+		// TODO Call queue.finish() here
 	}
 	
 	/**
@@ -83,6 +83,7 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 			if (words.length > 0) {
 				ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words);
 				lock.lockReadWrite();
+				// TODO Move the String.join() outside the lock
 				index.put(String.join(" ", words), results);
 				lock.unlockReadWrite();
 			}

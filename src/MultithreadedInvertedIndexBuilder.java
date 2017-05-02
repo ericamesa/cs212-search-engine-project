@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+// TODO Javadoc
 
 /**
  * Builds Inverted Index by going through directories and/or files and adds each word.
@@ -24,6 +25,7 @@ public class MultithreadedInvertedIndexBuilder {
 	public static void throughDirectory(Path path, ThreadSafeInvertedIndex index, WorkQueue queue) throws IOException {
 		MultithreadedInvertedIndexBuilder builder = new MultithreadedInvertedIndexBuilder(queue);
 		builder.start(path, index);
+		// TODO queue.finish(); and not in driver
 	}
 
 	private final WorkQueue queue;
@@ -61,6 +63,13 @@ public class MultithreadedInvertedIndexBuilder {
 			String filename = path.toString();
 			try {
 				InvertedIndexBuilder.throughHTMLFile(path, filename, index);
+				
+				/* TODO
+				InvertedIndex local = new InvertedIndex();
+				InvertedIndexBuilder.throughHTMLFile(path, filename, local);
+				index.addAll(local);
+				*/
+				
 			} catch (IOException e) {
 				Thread.currentThread().interrupt();
 			}

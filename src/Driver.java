@@ -32,6 +32,53 @@ public class Driver {
 		boolean hasThreads = argumentMap.hasFlag("-threads");
 		Logger logger = LogManager.getLogger();
 		
+		
+		/* TODO
+		ArgumentMap argumentMap = new ArgumentMap(args);
+		InvertedIndex index = null;
+		WorkQueue queue = null;
+		SearchIndexInterface searchIndex = null;
+		
+		if (-thread) {
+			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
+			index = threadSafe;
+			queue = new WorkQueue(numThreads);
+			searchIndex = new ThreadSafeSearchIndex(threadSafe, queue);
+		}
+		else {
+			index = new InvertedIndex();
+			searchIndex = new ThreadSafeSearchIndex(index);
+		}
+		
+		if (-path) {
+			if (queue != null) {
+				MultithreadedInvertedIndexBuilder.throughDirectory(path, threadSafeIndex, queue);
+			}
+			else {
+				InvertedIndexBuilder.throughDirectory(path, index);
+			}
+		}
+		
+		if (-query) {
+		
+			searchIndex.addFromPath(...);
+			
+		}
+		
+		if (-results) {
+			searchIndex.toJSON(...);
+		}
+		
+		if (-index) {
+			index.toJSON(...);
+		}
+		
+		if (queue != null) {
+			queue.shutdown();
+		}
+		
+		*/
+		
 		if (hasThreads) {
 			int num = argumentMap.getInteger("-threads", 5);
 			if (num <= 0) {
