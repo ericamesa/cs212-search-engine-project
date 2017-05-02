@@ -88,22 +88,29 @@ public class InvertedIndex {
 		}
 	}
 	
-	/* TODO Add this and override in ThreadSafe
+	/**
+	 * Adds all the contents of given InvertedIndex to this InvertedIndex
+	 * 
+	 * @param other
+	 *            given InvertedIndex
+	 */
 	public void addAll(InvertedIndex other) {
 		for (String word : other.index.keySet()) {
-			if (this.index.containsKey(word) == false) {
+			if (!this.index.containsKey(word)) {
 				this.index.put(word, other.index.get(word));
 			}
 			else {
-				for every path
-					if that path does not exist
-						do another put of the entire position set
-					else
-						use the set.addAll to combine position sets	
+				for (String path : other.index.get(word).keySet()) {
+					if (!this.index.get(word).containsKey(path)) {
+						this.index.get(word).put(path, other.index.get(word).get(path));
+					}
+					else {
+						this.index.get(word).get(path).addAll(other.index.get(word).get(path));
+					}
+				}
 			}
 		}
 	}
-	*/
 
 	/**
 	 * Writes index to specified path in JSON format.

@@ -6,8 +6,6 @@ import java.nio.file.Path;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// TODO Javadoc
-
 /**
  * Builds Inverted Index by going through directories and/or files and adds each word.
  */
@@ -22,19 +20,25 @@ public class MultithreadedInvertedIndexBuilder {
 	 * @param index
 	 *            InvertedIndex to add to
 	 */
-	public static void throughDirectory(Path path, ThreadSafeInvertedIndex index, WorkQueue queue) throws IOException {
+	public static void throughDirectory(Path path, InvertedIndex index, WorkQueue queue) throws IOException {
 		MultithreadedInvertedIndexBuilder builder = new MultithreadedInvertedIndexBuilder(queue);
 		builder.start(path, index);
-		// TODO queue.finish(); and not in driver
+		queue.finish();
 	}
 
 	private final WorkQueue queue;
 	
+	/* 
+	 * Private Constructor that implements a WorkQueue
+	 */
 	private MultithreadedInvertedIndexBuilder(WorkQueue queue) {
 		this.queue = queue;
 	}
 	
-	private void start(Path path, ThreadSafeInvertedIndex index) throws IOException {
+	/**
+	 * Private helper method that throughDirectory calls to start going through directories and assigning tasks
+	 */
+	private void start(Path path, InvertedIndex index) throws IOException {
 		try (DirectoryStream<Path> directory = Files.newDirectoryStream(path);) {
 			for (Path file : directory) {
 				if (Files.isDirectory(file)) {
@@ -47,12 +51,15 @@ public class MultithreadedInvertedIndexBuilder {
 		}
 	}
 	
+	/**
+	 * Runnable task that parses through an HTML file and adds to an InvertedIndex
+	 */
 	private class Task implements Runnable {
 
 		Path path;
-		ThreadSafeInvertedIndex index;
-		
-		public Task(Path path, ThreadSafeInvertedIndex index) {
+		InvertedIndex index;
+	
+		public Task(Path path, InvertedIndex index) {
 			this.path = path;
 			this.index = index;
 		}
@@ -62,13 +69,9 @@ public class MultithreadedInvertedIndexBuilder {
 			//logger.debug("Starting {}", path);
 			String filename = path.toString();
 			try {
-				InvertedIndexBuilder.throughHTMLFile(path, filename, index);
-				
-				/* TODO
 				InvertedIndex local = new InvertedIndex();
 				InvertedIndexBuilder.throughHTMLFile(path, filename, local);
 				index.addAll(local);
-				*/
 				
 			} catch (IOException e) {
 				Thread.currentThread().interrupt();

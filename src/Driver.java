@@ -24,68 +24,25 @@ public class Driver {
 	public static void main(String[] args) {
 
 		ArgumentMap argumentMap = new ArgumentMap(args);
-		InvertedIndex index = new InvertedIndex();
-		SearchIndex searchIndex = new SearchIndex(index);
-		WorkQueue queue = new WorkQueue();
-		ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
-		ThreadSafeSearchIndex threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
-		boolean hasThreads = argumentMap.hasFlag("-threads");
+		InvertedIndex index = null;
+		SearchIndexInterface searchIndex = null;
+		WorkQueue queue = null;
 		Logger logger = LogManager.getLogger();
 		
-		
-		/* TODO
-		ArgumentMap argumentMap = new ArgumentMap(args);
-		InvertedIndex index = null;
-		WorkQueue queue = null;
-		SearchIndexInterface searchIndex = null;
-		
-		if (-thread) {
-			ThreadSafeInvertedIndex threadSafe = new ThreadSafeInvertedIndex();
-			index = threadSafe;
-			queue = new WorkQueue(numThreads);
-			searchIndex = new ThreadSafeSearchIndex(threadSafe, queue);
-		}
-		else {
-			index = new InvertedIndex();
-			searchIndex = new ThreadSafeSearchIndex(index);
-		}
-		
-		if (-path) {
-			if (queue != null) {
-				MultithreadedInvertedIndexBuilder.throughDirectory(path, threadSafeIndex, queue);
-			}
-			else {
-				InvertedIndexBuilder.throughDirectory(path, index);
-			}
-		}
-		
-		if (-query) {
-		
-			searchIndex.addFromPath(...);
+		if (argumentMap.hasFlag("-threads")) {
+			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
+			index = threadSafeIndex;
 			
-		}
-		
-		if (-results) {
-			searchIndex.toJSON(...);
-		}
-		
-		if (-index) {
-			index.toJSON(...);
-		}
-		
-		if (queue != null) {
-			queue.shutdown();
-		}
-		
-		*/
-		
-		if (hasThreads) {
 			int num = argumentMap.getInteger("-threads", 5);
 			if (num <= 0) {
 				num = 5;
 			}
 			queue = new WorkQueue(num);
-			threadSafeSearchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
+			searchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
+		}
+		else {
+			index = new InvertedIndex();
+			searchIndex = new SearchIndex(index);
 		}
 
 		if (argumentMap.hasFlag("-path")) {
@@ -97,13 +54,13 @@ public class Driver {
 				String input = argumentMap.getString("-path");
 				Path path = Paths.get(input);
 				try {
-					if (hasThreads) {
+					if (queue != null) {
 						if (Files.isDirectory(path)) {
+							ThreadSafeInvertedIndex threadSafeIndex = (ThreadSafeInvertedIndex) index;
 							MultithreadedInvertedIndexBuilder.throughDirectory(path, threadSafeIndex, queue);
 						} else {
-							InvertedIndexBuilder.throughHTMLFile(path, input, threadSafeIndex);
+							InvertedIndexBuilder.throughHTMLFile(path, input, index);
 						}
-						queue.finish();
 					}
 					else {
 						if (Files.isDirectory(path)) {
@@ -118,7 +75,6 @@ public class Driver {
 					return;
 				}
 			}
-			
 		}
 
 		if (argumentMap.hasFlag("-index")) {
@@ -126,17 +82,11 @@ public class Driver {
 			Path outputPath = Paths.get(output);
 			logger.debug("outputing to JSON");
 			try {
-				if (hasThreads) {
-					threadSafeIndex.toJSON(outputPath);
-				}
-				else {
-					index.toJSON(outputPath);
-				}
-				
+				index.toJSON(outputPath);
+
 			} catch (IOException e) {
 				System.out.println("Could not write to file.");
 			}
-			
 		}
 		
 		if (argumentMap.hasFlag("-query")) {
@@ -149,21 +99,13 @@ public class Driver {
 				Path path = Paths.get(input);
 				
 				try {
-					if (hasThreads) {
-						threadSafeSearchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
-						queue.finish();
-					}
-					else {
-						searchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
-					}
+					searchIndex.addFromFile(path, argumentMap.hasFlag("-exact"));
 					
 				} catch (IOException e) {
 					System.out.println("The path you provided could not be read through.");
 					return;
 				}
-				
 			}
-			
 		}
 		
 		if (argumentMap.hasFlag("-results")) {
@@ -171,19 +113,16 @@ public class Driver {
 			Path path = Paths.get(output);
 			logger.debug("Outputing to JSON");
 			try {
-				if (hasThreads) {
-					threadSafeSearchIndex.toJSON(path);
-				}
-				else {
 					searchIndex.toJSON(path);
-				}
 				
 			} catch (IOException e) {
 				System.out.println("Could not write to file.");
 			}
 		}
 		
-		queue.shutdown();
+		if (queue != null) {
+			queue.shutdown();
+		}
 		
 	}
 

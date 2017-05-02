@@ -31,16 +31,6 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 		lock = new ReadWriteLock();
 	}
 	
-	/**
-	 * Adds words from given file to index and an ArrayList of its SearchResults.
-	 *
-	 * @param path
-	 *            path to read words from
-	 * @param invertedIndex
-	 *            index to search through
-	 * @param exact
-	 *            true if searching for exact matches, false to search for partial matches
-	 */
 	@Override
 	public void addFromFile(Path path, Boolean exact) throws IOException {
 		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
@@ -49,15 +39,9 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 				queue.execute(new Task(line, exact));
 			}
 		}
-		// TODO Call queue.finish() here
+		queue.finish();
 	}
 	
-	/**
-	 * Writes index to specified path in JSON format.
-	 *
-	 * @param path
-	 *            path to write to
-	 */
 	@Override
 	public void toJSON(Path path) throws IOException {
 		lock.lockReadOnly();
@@ -65,6 +49,9 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 		lock.unlockReadOnly();
 	}
 	
+	/*
+	 * Runnable task that finds and adds search results to a SearchIndex
+	 */
 	private class Task implements Runnable {
 		
 		private String line;
@@ -82,13 +69,12 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 			Arrays.sort(words);
 			if (words.length > 0) {
 				ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words);
+				String stringwords = String.join(" ", words);
 				lock.lockReadWrite();
-				// TODO Move the String.join() outside the lock
-				index.put(String.join(" ", words), results);
+				index.put(stringwords, results);
 				lock.unlockReadWrite();
 			}
 			logger.debug("Finished {}", line);
-			
 		}
 	}
 

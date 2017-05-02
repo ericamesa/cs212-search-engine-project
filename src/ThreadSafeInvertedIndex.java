@@ -37,23 +37,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		lock.unlockReadWrite();
 	}
 
-	// TODO Remove method
-	/**
-	 * Adds the array of words at once, assuming the first word in the array is
-	 * at position 1.
-	 *
-	 * @param words
-	 *            array of words to add
-	 *
-	 * @see #addAll(String[], int)
-	 */
-	@Override
-	public void addAll(String[] words, String filename) {
-		lock.lockReadWrite();
-		super.addAll(words, filename, 1);
-		lock.unlockReadWrite();
-	}
-
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at the provided starting position
@@ -68,6 +51,21 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		lock.lockReadWrite();
 		
 		super.addAll(words, filename, start);
+		
+		lock.unlockReadWrite();
+	}
+	
+	/**
+	 * Adds all the contents of given InvertedIndex to this InvertedIndex
+	 * 
+	 * @param other
+	 *            given InvertedIndex
+	 */
+	@Override
+	public void addAll(InvertedIndex other) {
+		lock.lockReadWrite();
+		
+		super.addAll(other);
 		
 		lock.unlockReadWrite();
 	}
