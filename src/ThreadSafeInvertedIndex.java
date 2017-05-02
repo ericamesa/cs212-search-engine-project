@@ -37,6 +37,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		lock.unlockReadWrite();
 	}
 
+	// TODO Remove method
 	/**
 	 * Adds the array of words at once, assuming the first word in the array is
 	 * at position 1.
