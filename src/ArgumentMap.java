@@ -66,7 +66,7 @@ public class ArgumentMap {
 	 * @return
 	 */
 	public static boolean isValue(String arg) {
-		return arg != null && arg.charAt(0) != '-' && (Character.isDigit(arg.charAt(0)) || Character.isLetter(arg.charAt(0)));
+		return arg != null && arg.charAt(0) != '-' && arg.trim().length() >= 1;
 	}
 
 	/**
