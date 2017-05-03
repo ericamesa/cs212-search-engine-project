@@ -29,6 +29,8 @@ public class Driver {
 		WorkQueue queue = null;
 		Logger logger = LogManager.getLogger();
 		
+		System.out.println(argumentMap.toString());
+		
 		if (argumentMap.hasFlag("-threads")) {
 			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 			index = threadSafeIndex;
