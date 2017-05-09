@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,15 +22,11 @@ public class Driver {
 	 * 			  command line arguments
 	 */
 	public static void main(String[] args) {
-
-		System.out.println(Arrays.toString(args)); // TODO Remove
 		ArgumentMap argumentMap = new ArgumentMap(args);
 		InvertedIndex index = null;
 		SearchIndexInterface searchIndex = null;
 		WorkQueue queue = null;
 		Logger logger = LogManager.getLogger();
-		
-		System.out.println(argumentMap.toString()); // TODO Remove
 		
 		if (argumentMap.hasFlag("-threads")) {
 			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();

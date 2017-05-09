@@ -17,8 +17,8 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 	 */
 	private final TreeMap<String, ArrayList<SearchResult>> index;
 	private final ThreadSafeInvertedIndex invertedIndex;
-	private WorkQueue queue; // TODO final
-	private ReadWriteLock lock; // TODO final
+	private final WorkQueue queue;
+	private final ReadWriteLock lock;
 	Logger logger = LogManager.getLogger();
 
 	/**
@@ -66,8 +66,8 @@ public class ThreadSafeSearchIndex implements SearchIndexInterface {
 		public void run() {
 			logger.debug("Starting {}", line);
 			String[] words = WordParser.parseWords(line);
-			Arrays.sort(words); // TODO Move sort into the if statement
 			if (words.length > 0) {
+				Arrays.sort(words);
 				ArrayList<SearchResult> results = exact ? invertedIndex.exactSearch(words) : invertedIndex.partialSearch(words);
 				String stringwords = String.join(" ", words);
 				lock.lockReadWrite();
