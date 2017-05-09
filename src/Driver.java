@@ -24,14 +24,14 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 
-		System.out.println(Arrays.toString(args));
+		System.out.println(Arrays.toString(args)); // TODO Remove
 		ArgumentMap argumentMap = new ArgumentMap(args);
 		InvertedIndex index = null;
 		SearchIndexInterface searchIndex = null;
 		WorkQueue queue = null;
 		Logger logger = LogManager.getLogger();
 		
-		System.out.println(argumentMap.toString());
+		System.out.println(argumentMap.toString()); // TODO Remove
 		
 		if (argumentMap.hasFlag("-threads")) {
 			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
