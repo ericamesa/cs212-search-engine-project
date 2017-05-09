@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,7 +30,28 @@ public class Driver {
 		WorkQueue queue = null;
 		Logger logger = LogManager.getLogger();
 		
-		if (argumentMap.hasFlag("-threads")) {
+		if (argumentMap.hasFlag("-url")) {
+			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
+			index = threadSafeIndex;
+			queue = new WorkQueue();
+			searchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
+			if (!argumentMap.hasValue("-url")) {
+				System.out.println("No Seed Provided");
+				return;
+			}
+			else {
+				int limit = argumentMap.getInteger("-limit", 50);
+				WebCrawler crawler = new WebCrawler(threadSafeIndex);
+				URL seed;
+				try {
+					seed = new URL(argumentMap.getString("-url"));
+					crawler.crawl(seed, limit);
+				} catch (MalformedURLException e) {
+					System.out.println("Could not create URL from seed provided");
+				}
+			}
+		} 
+		else if (argumentMap.hasFlag("-threads")) {
 			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 			index = threadSafeIndex;
 			
