@@ -165,7 +165,7 @@ public class WorkQueue {
 				catch (RuntimeException ex) {
 					// catch runtime exceptions to avoid leaking threads
 					System.err.println("Warning: Work queue encountered an " + "exception while running.");
-					logger.debug("Work queue encountered a runtime excpetion", ex);
+					logger.debug("Work queue encountered a runtime exception", ex);
 				}
 				
 				decrememntPending();

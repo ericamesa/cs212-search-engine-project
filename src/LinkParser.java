@@ -42,8 +42,9 @@ public class LinkParser {
 	 * @return HTML as a String or null if the link was not HTML
 	 */
 	public static String fetchHTML(URL url) {
+		
 		try {
-			return (HTTPFetcher.fetchHTML(url.toString()) == null) ? null : HTTPFetcher.fetchHTML(url.toString());
+			return HTTPFetcher.fetchHTML(url.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 /**
 * Driver class which takes in args and adds words from -path argument to an InvertedIndex and outputs to -index
 * argument. Parses through -query argument, if -exact flag is found searches for exact matches in the inverted index 
@@ -28,30 +31,11 @@ public class Driver {
 		InvertedIndex index = null;
 		SearchIndexInterface searchIndex = null;
 		WorkQueue queue = null;
+		WebCrawler crawler = null;
 		Logger logger = LogManager.getLogger();
 		
-		if (argumentMap.hasFlag("-url")) {
-			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
-			index = threadSafeIndex;
-			queue = new WorkQueue();
-			searchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
-			if (!argumentMap.hasValue("-url")) {
-				System.out.println("No Seed Provided");
-				return;
-			}
-			else {
-				int limit = argumentMap.getInteger("-limit", 50);
-				WebCrawler crawler = new WebCrawler(threadSafeIndex);
-				URL seed;
-				try {
-					seed = new URL(argumentMap.getString("-url"));
-					crawler.crawl(seed, limit);
-				} catch (MalformedURLException e) {
-					System.out.println("Could not create URL from seed provided");
-				}
-			}
-		} 
-		else if (argumentMap.hasFlag("-threads")) {
+		
+		if (argumentMap.hasFlag("-threads") || argumentMap.hasFlag("-url") || argumentMap.hasFlag("-port")) {
 			ThreadSafeInvertedIndex threadSafeIndex = new ThreadSafeInvertedIndex();
 			index = threadSafeIndex;
 			
@@ -61,11 +45,32 @@ public class Driver {
 			}
 			queue = new WorkQueue(num);
 			searchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
+			
+			if (argumentMap.hasFlag("-url")) {
+				crawler = new WebCrawler(threadSafeIndex);
+			}
 		}
 		else {
 			index = new InvertedIndex();
 			searchIndex = new SearchIndex(index);
 		}
+		
+		if (crawler != null) {
+			if (!argumentMap.hasValue("-url")) {
+				System.out.println("No Seed Provided");
+				return;
+			}
+			else {
+				int limit = argumentMap.getInteger("-limit", 50);
+				URL seed;
+				try {
+					seed = new URL(argumentMap.getString("-url"));
+					crawler.crawl(seed, limit);
+				} catch (MalformedURLException e) {
+					System.out.println("Could not create URL from seed provided");
+				}
+			}
+		} 
 
 		if (argumentMap.hasFlag("-path")) {
 			if (!argumentMap.hasValue("-path")) {
@@ -96,6 +101,23 @@ public class Driver {
 					System.out.println("The path you provided could not be read through.");
 					return;
 				}
+			}
+		}
+		
+		if (argumentMap.hasFlag("-port")) {
+			final int PORT = 8080;
+			
+			Server server = new Server(PORT);
+
+			ServletHandler handler = new ServletHandler();
+			handler.addServletWithMapping(new ServletHolder(new SearchServlet(index)), "/");
+
+			server.setHandler(handler);
+			try {
+				server.start();
+				server.join();
+			} catch (Exception e) {
+				System.out.println("Problem occured with Server");
 			}
 		}
 

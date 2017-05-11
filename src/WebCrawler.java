@@ -51,7 +51,11 @@ public class WebCrawler {
 		
 		@Override
 		public void run() {
+			logger.debug("Finding links from {}", seed);
 			String html = LinkParser.fetchHTML(seed);
+			if (html == null) {
+				return;
+			}
 			try {
 				for (URL url : LinkParser.listLinks(seed, html)) {
 					synchronized (urls) {
