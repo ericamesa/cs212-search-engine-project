@@ -9,11 +9,13 @@ public class WebCrawler {
 	private final ThreadSafeInvertedIndex index;
 	private final WorkQueue queue;
 	private final HashSet<URL> urls;
+	private WebPageSnippets snippets;
 	private int max;
 	Logger logger = LogManager.getLogger();
 	
-	public WebCrawler(ThreadSafeInvertedIndex index) {
+	public WebCrawler(ThreadSafeInvertedIndex index, WebPageSnippets snippets) {
 		this.index = index;
+		this.snippets = snippets;
 		queue = new WorkQueue();
 		urls = new HashSet<>();
 		max = 50;
@@ -62,8 +64,7 @@ public class WebCrawler {
 						if (urls.size() >= max) {
 							break;
 						}
-						if (!urls.contains(url)) {
-							urls.add(url);
+						if (urls.add(url)) {
 							queue.execute(new Task(url));
 						}
 					}
@@ -73,6 +74,7 @@ public class WebCrawler {
 			}
 			
 			html = HTMLCleaner.stripHTML(html);
+			snippets.add(seed.toString(), html);
 			String[] words = WordParser.parseWords(html);
 			InvertedIndex local = new InvertedIndex();
 			local.addAll(words, seed.toString());

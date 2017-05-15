@@ -32,6 +32,7 @@ public class Driver {
 		SearchIndexInterface searchIndex = null;
 		WorkQueue queue = null;
 		WebCrawler crawler = null;
+		WebPageSnippets snippets = null;
 		Logger logger = LogManager.getLogger();
 		
 		
@@ -47,7 +48,8 @@ public class Driver {
 			searchIndex = new ThreadSafeSearchIndex(threadSafeIndex, queue);
 			
 			if (argumentMap.hasFlag("-url")) {
-				crawler = new WebCrawler(threadSafeIndex);
+				snippets = new WebPageSnippets();
+				crawler = new WebCrawler(threadSafeIndex, snippets);
 			}
 		}
 		else {
@@ -105,12 +107,22 @@ public class Driver {
 		}
 		
 		if (argumentMap.hasFlag("-port")) {
-			final int PORT = 8080;
+			int PORT = argumentMap.getInteger("-port", 8080);
 			
 			Server server = new Server(PORT);
 
 			ServletHandler handler = new ServletHandler();
-			handler.addServletWithMapping(new ServletHolder(new SearchServlet(index)), "/");
+			handler.addServletWithMapping(new ServletHolder(new SearchServlet(index, snippets)), "/");
+			handler.addServletWithMapping(LoginUserServlet.class, "/login");
+			handler.addServletWithMapping(RegisterServlet.class, "/register");
+			handler.addServletWithMapping(LoginWelcomeServlet.class, "/welcome");
+			handler.addServletWithMapping(new ServletHolder(new SearchUserServlet(index, snippets)), "/search");
+			handler.addServletWithMapping(SettingsServlet.class, "/settings");
+			handler.addServletWithMapping(VisitedResultsServlet.class, "/save");
+			handler.addServletWithMapping(VisitedResultsServlet.class, "/visitedresults");
+			handler.addServletWithMapping(SearchHistoryServlet.class, "/searchhistory");
+			handler.addServletWithMapping(PasswordServlet.class, "/changepass");
+			handler.addServletWithMapping(DeleteUserServlet.class, "/delete");
 
 			server.setHandler(handler);
 			try {

@@ -37,10 +37,6 @@ public class SearchResult implements Comparable<SearchResult> {
 		return initialPosition;
 	}
 	
-	public String path() {
-		return path;
-	}
-	
 	/**
 	 * Adds to frequency specified value.
 	 *

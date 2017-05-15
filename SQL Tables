@@ -1,0 +1,55 @@
+
+(Change password)
+
+UPDATE login_users
+SET password = ?
+WHERE username = ?;
+
+
+(Search History SQL statements)
+
+CREATE TABLE search_history (
+searchid INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(32) NOT NULL,
+words VARCHAR(64) NOT NULL
+);
+
+ALTER TABLE search_history
+ADD FOREIGN KEY (username) 
+REFERENCES login_users (username);
+
+INSERT INTO search_history (username, words)
+VALUES (?, ?);
+
+DELETE FROM search_history 
+WHERE username = ?;
+
+SELECT words 
+FROM search_history
+WHERE username = ?;
+
+
+(Visited Results SQL statements)
+
+CREATE TABLE visited_results (
+visitedid INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(32) NOT NULL,
+link VARCHAR(64) NOT NULL
+);
+
+ALTER TABLE visited_results
+ADD FOREIGN KEY (username) 
+REFERENCES login_users (username);
+
+INSERT INTO visited_results (username, link)
+VALUES (?, ?);
+
+DELETE FROM search_history 
+WHERE username = ?;
+
+SELECT link
+FROM visited_results
+WHERE username = ?;
+
+
+
