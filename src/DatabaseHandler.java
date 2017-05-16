@@ -700,8 +700,15 @@ public class DatabaseHandler {
 			statement.setString(1, username);
 			statement.setString(2, words);
 
-			statement.executeUpdate();
-			status = Status.OK;
+			int count = statement.executeUpdate();
+			
+			if (count == 1) {
+				status = Status.OK;
+			}
+			else {
+				status = Status.SQL_EXCEPTION;
+			}
+			
 			
 		}
 		catch (SQLException ex) {
@@ -717,7 +724,7 @@ public class DatabaseHandler {
 		
 		log.debug("Adding search history " + username + ".");
 		
-		if (!isBlank(words)) {
+		if (isBlank(words)) {
 			return Status.MISSING_VALUES;
 		}
 
